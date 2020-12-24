@@ -1,0 +1,137 @@
+package com.yzs.data.sql
+
+object user {
+  val tableName = "src_user"
+  val Columns = Array("TYPE"
+    , "ID"
+    , "CREATED_BY"
+    , "CREATION_TIME"
+    , "LAST_UPDATE_TIME"
+    , "UPDATED_BY"
+    , "VERSION"
+    , "COST_INVOICE_MATCH_TIME"
+    , "COST_INVOICE_MATCHER"
+    , "COST_REMARK"
+    , "HAS_COST_INVOICE_MATCHED"
+    , "ACCEPT_ORDER_TIME"
+    , "DISPATCH_TIME"
+    , "DISPATCHER"
+    , "DISPATH_TYPE"
+    , "DRIVER_NAME"
+    , "DRIVER_PHONE"
+    , "DROP_REASON"
+    , "DROP_TIME"
+    , "IS_ACTIVE"
+    , "ORDER_TAKER"
+    , "SEND_ORDER_TIME"
+    , "TAKER_ADDRESS"
+    , "TAKER_PHONE"
+    , "TRUCK_PLATE_NUMBER"
+    , "CONTAINER_RECEIPT_ID"
+    , "STATUS_ID"
+    , "TASK_TYPE_ID"
+    , "DRIVER_ID"
+    , "TASK_PACKAGE_ID"
+    , "PLAN_GATE_IN_TIME_FROM"
+    , "PLAN_GATE_IN_TIME_TO"
+    , "REAMRK"
+    , "CASH_PAYED"
+    , "OIL_PAYED"
+    , "VIP_SUBSIDY_PAYED"
+    , "CONFIRMED_TIME"
+    , "HAS_CONFIRMED"
+    , "SEND_ORDER_REMARK"
+    , "DROP_DEPOT"
+    , "PICK_UP_DEPOT"
+    , "REMARK"
+    , "REQUIRED_SUPPLIER_TIME"
+    , "REQUIRED_TIME"
+    , "SUB_TYPE"
+    , "SUPPLIER_REMARK"
+    , "SUPPLIER_ID"
+    , "IS_BEFOREHAND_EMPTY_PICKUP"
+    , "RESET_COST_REMARK"
+    , "NON_VIP_SEND_ORDER_TIME"
+    , "ASSIGN_SUPPLIER_TIME"
+    , "GRAB_ORDER_TYPE"
+    , "EIR_DESPATCHER_TYPE"
+    , "EIR_HAULIER_NAME"
+    , "EIR_HAULIER_CODE"
+    , "is_delay"
+    , "transport_schedule"
+    , "DROP_DEPOT_ID"
+    , "PREV_STATUS_ID"
+  )
+  val KeyColumns = Array("id")
+  var InsertSql =
+    """
+             INSERT INTO yzs_src.src_user  (
+             TYPE
+,ID
+,CREATED_BY
+,CREATION_TIME
+,LAST_UPDATE_TIME
+,UPDATED_BY
+,VERSION
+,COST_INVOICE_MATCH_TIME
+,COST_INVOICE_MATCHER
+,COST_REMARK
+,HAS_COST_INVOICE_MATCHED
+,ACCEPT_ORDER_TIME
+,DISPATCH_TIME
+,DISPATCHER
+,DISPATH_TYPE
+,DRIVER_NAME
+,DRIVER_PHONE
+,DROP_REASON
+,DROP_TIME
+,IS_ACTIVE
+,ORDER_TAKER
+,SEND_ORDER_TIME
+,TAKER_ADDRESS
+,TAKER_PHONE
+,TRUCK_PLATE_NUMBER
+,CONTAINER_RECEIPT_ID
+,STATUS_ID
+,TASK_TYPE_ID
+,DRIVER_ID
+,TASK_PACKAGE_ID
+,PLAN_GATE_IN_TIME_FROM
+,PLAN_GATE_IN_TIME_TO
+,REAMRK
+,CASH_PAYED
+,OIL_PAYED
+,VIP_SUBSIDY_PAYED
+,CONFIRMED_TIME
+,HAS_CONFIRMED
+,SEND_ORDER_REMARK
+,DROP_DEPOT
+,PICK_UP_DEPOT
+,REMARK
+,REQUIRED_SUPPLIER_TIME
+,REQUIRED_TIME
+,SUB_TYPE
+,SUPPLIER_REMARK
+,SUPPLIER_ID
+,IS_BEFOREHAND_EMPTY_PICKUP
+,RESET_COST_REMARK
+,NON_VIP_SEND_ORDER_TIME
+,ASSIGN_SUPPLIER_TIME
+,GRAB_ORDER_TYPE
+,EIR_DESPATCHER_TYPE
+,EIR_HAULIER_NAME
+,EIR_HAULIER_CODE
+,is_delay
+,transport_schedule
+,DROP_DEPOT_ID
+,PREV_STATUS_ID
+             )
+             VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
+?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
+?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            """
+
+  //alter table  yzs_src.src_user update job_name='10' where id ='12' ;
+  var UpdateSql = "alter table  yzs_src.src_user update  "
+
+}

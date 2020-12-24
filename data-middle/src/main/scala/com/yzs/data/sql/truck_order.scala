@@ -1,0 +1,150 @@
+package com.yzs.data.sql
+
+object truck_order {
+  val tableName = "src_truck_order"
+  val Columns = Array("ID"
+    , "CREATED_BY"
+    , "CREATION_TIME"
+    , "LAST_UPDATE_TIME"
+    , "UPDATED_BY"
+    , "VERSION"
+    , "BL_NO"
+    , "BUSINESS_NO"
+    , "BUYER_CONTACT"
+    , "BUYER_PHONE"
+    , "CARRIER"
+    , "CLOSING_TIME"
+    , "CLASS_NO"
+    , "DOCUMENTARY_OFF_TIME"
+    , "ETA"
+    , "ETD"
+    , "FROM_PORT_NAME"
+    , "GOODS_TYPE"
+    , "IS_DANGEROUS_CARGO"
+    , "IS_QUARANTINED"
+    , "IS_REFER"
+    , "IS_TANK_WASHER"
+    , "OPENING_TIME"
+    , "ORDER_NO"
+    , "PLACE_OF_DELIVERY"
+    , "PORT_DISTRICT"
+    , "QUARANTINE_ADDRESS"
+    , "QUARANTINE_NO"
+    , "TANK_WASHER_ADDRESS"
+    , "TEMPRATURE"
+    , "TO_PORT_NAME"
+    , "UN_NO"
+    , "VESSEL"
+    , "VOYAGE"
+    , "BOUND_TYPE_ID"
+    , "BUYER_ID"
+    , "PORT_DISTRICT_ID"
+    , "LOAD_TYPE_ID"
+    , "ORDER_DOCUMENT_ID"
+    , "SELLER_ID"
+    , "TRADE_TYPE_ID"
+    , "PORT_ID"
+    , "SALES"
+    , "SALES_DEPARTMENT"
+    , "CUSTOMER_SERVICE"
+    , "CARRIER_ID"
+    , "eirAddress"
+    , "hasCustomerAppliedEir"
+    , "WAITTING_FOR_NOTIFY_TO_RELEASE_ORDER"
+    , "IS_SOC"
+    , "OUTPUT_DOCUMENTARY_OFF_DATA"
+    , "DOCUMENT_CODE"
+    , "REQUIRED_GATE_IN_TIME"
+    , "OPENING_TIME_FIRST_UPDATE_TIME"
+    , "ORDER_ACCEPT_TIME"
+    , "FORWARDER_COMPANY_ID"
+    , "BUYER_EMAIL"
+    , "VENTILATION"
+    , "IMDG_DESCRIPTION"
+    , "IS_VGM_PROVIDED_BY_FACTORY"
+    , "BL_NO_PRIMARY"
+    , "OWNER"
+    , "NEED_CUSTOMER_DOUBLE_CONFIRM"
+    , "SETTLEMENT_CODE"
+    , "CTN_OPERATOR_CODE"
+    , "FORWARDER_ORDER_ID"
+  )
+  val KeyColumns = Array("id")
+  var InsertSql =
+    """
+             INSERT INTO yzs_src.src_truck_order  (
+             ID
+,CREATED_BY
+,CREATION_TIME
+,LAST_UPDATE_TIME
+,UPDATED_BY
+,VERSION
+,BL_NO
+,BUSINESS_NO
+,BUYER_CONTACT
+,BUYER_PHONE
+,CARRIER
+,CLOSING_TIME
+,CLASS_NO
+,DOCUMENTARY_OFF_TIME
+,ETA
+,ETD
+,FROM_PORT_NAME
+,GOODS_TYPE
+,IS_DANGEROUS_CARGO
+,IS_QUARANTINED
+,IS_REFER
+,IS_TANK_WASHER
+,OPENING_TIME
+,ORDER_NO
+,PLACE_OF_DELIVERY
+,PORT_DISTRICT
+,QUARANTINE_ADDRESS
+,QUARANTINE_NO
+,TANK_WASHER_ADDRESS
+,TEMPRATURE
+,TO_PORT_NAME
+,UN_NO
+,VESSEL
+,VOYAGE
+,BOUND_TYPE_ID
+,BUYER_ID
+,PORT_DISTRICT_ID
+,LOAD_TYPE_ID
+,ORDER_DOCUMENT_ID
+,SELLER_ID
+,TRADE_TYPE_ID
+,PORT_ID
+,SALES
+,SALES_DEPARTMENT
+,CUSTOMER_SERVICE
+,CARRIER_ID
+,eirAddress
+,hasCustomerAppliedEir
+,WAITTING_FOR_NOTIFY_TO_RELEASE_ORDER
+,IS_SOC
+,OUTPUT_DOCUMENTARY_OFF_DATA
+,DOCUMENT_CODE
+,REQUIRED_GATE_IN_TIME
+,OPENING_TIME_FIRST_UPDATE_TIME
+,ORDER_ACCEPT_TIME
+,FORWARDER_COMPANY_ID
+,BUYER_EMAIL
+,VENTILATION
+,IMDG_DESCRIPTION
+,IS_VGM_PROVIDED_BY_FACTORY
+,BL_NO_PRIMARY
+,OWNER
+,NEED_CUSTOMER_DOUBLE_CONFIRM
+,SETTLEMENT_CODE
+,CTN_OPERATOR_CODE
+,FORWARDER_ORDER_ID
+             VALUES(,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            """
+
+  //alter table  yzs_src.src_truck_order update job_name='10' where id ='12' ;
+  var UpdateSql = "alter table  yzs_src.src_truck_order update  "
+
+}
