@@ -66,10 +66,20 @@ object DateUtil {
     return t
   }
 
+//获取 系统日期
+  def getSysDate(): String = {
+     new SimpleDateFormat("yyyyMMdd").format(new Date())
+  }
+  //获取 系统日期
+  def getSysDateStamp(): String = {
+    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
+  }
   /**
     * 时间字符串转化为  格式：yyyymmdd
     */
   def  getDayStr(timeStr:String):String={
     return timeStr .split(" ")(0).replace("-", "")
   }
+
+
 }

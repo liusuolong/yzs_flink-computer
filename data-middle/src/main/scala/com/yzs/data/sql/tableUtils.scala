@@ -2,7 +2,7 @@ package com.yzs.data.sql
 
 
 object tableUtils extends Serializable {
-  val tableListArray = Array("com.yzs.data.sql.job_execution_log"
+  val tableListArray = Array("com.yzs.data.sql.job_status_trace_log"
     , "com.yzs.data.sql.job_execution_log"
     , "com.yzs.data.sql.driver_posting"
     , "com.yzs.data.sql.truck_order_container"
@@ -12,6 +12,24 @@ object tableUtils extends Serializable {
     , "com.yzs.data.sql.belonged_driver"
 
   )
+
+  def getColumnsType(tableName: String, ColumnName: String): String = {
+    val temp = getTableClass(tableName)
+    temp match {
+      case 0 => job_status_trace_log.columnTypeMap.get(ColumnName).toString
+      case 1 => job_execution_log.columnTypeMap.get(ColumnName).toString
+      case 2 => driver_posting.columnTypeMap.get(ColumnName).toString
+      case 3 => truck_order_container.columnTypeMap.get(ColumnName).toString
+      case 4 => truck_order.columnTypeMap.get(ColumnName).toString
+      case 5 => user.columnTypeMap.get(ColumnName).toString
+      case 6 => driver_vip_application.columnTypeMap.get(ColumnName).toString
+      case 7 => belonged_driver.columnTypeMap.get(ColumnName).toString
+
+      case _ => ""
+    }
+
+  }
+
 
   def gettableName(tableName: String): String = {
     val temp = getTableClass(tableName)

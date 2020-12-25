@@ -21,7 +21,7 @@ object driverPostingMain {
 
   def main(args: Array[String]): Unit = {
     @transient
-    var conn: Connection = null
+    //   var conn: Connection = null
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     val insert = clickHouseInsert.getClickHouseInsertSingleton()
     val update = clickHouseUpdate.getClickHouseUpdateSingleton()
@@ -38,7 +38,7 @@ object driverPostingMain {
     env.getCheckpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
     //设置statebackend
-   //  env.setStateBackend(new RocksDBStateBackend("hdfs://47.103.34.147:9000/flink/checkpoints",true));
+    //  env.setStateBackend(new RocksDBStateBackend("hdfs://47.103.34.147:9000/flink/checkpoints",true));
 
     val myConsumer = kafkaUtil.getDirectStream(env, groupName)
     driverPostingMainLog.info("执行INSERT before==============")
@@ -47,39 +47,46 @@ object driverPostingMain {
     //myConsumer.setStartFromEarliest
 
     val source = env.addSource(myConsumer)
-   // source.print()
-   val mapFliter = source.setParallelism(5).filter(line => {
-     dealTableFilter(dealParseObject(line))
+    // source.print()
+    source.setParallelism(5).filter(line => {
+      dealTableFilter(dealParseObject(line))
 
-   }).map(
+    }).map(
       temp => {
-       // conn = ckPoolUtil.getConn
-        conn=clickHouse.getClickHouseConn()
+        // conn = ckPoolUtil.getConn
+        val conn = ckPoolUtil.getConn()
         try {
-          val line=   dealParseObject(temp)
+
+          val line = dealParseObject(temp)
           val tableTemp = line.getString("table")
+          val execTemp = line.getString("type")
           val tableKeyColumns = tableUtils.getKeyColumns(tableTemp)
           val tableGetColumns = tableUtils.getColumns(tableTemp)
           val tableInsertSql = tableUtils.getInsertSql(tableTemp)
           val tableGetUpdateSql = tableUtils.getUpdateSql(tableTemp)
+          val newDataTemp = dealParseObject(line.getString("sqlType"))
           driverPostingMainLog.info("执行INSERT before==============")
 
-          line.getString("type") match {
+          execTemp match {
             case "INSERT" => {
               driverPostingMainLog.info("执行INSERT==============")
-              insert.insertJobStatusTraceLog(conn, tableInsertSql, tableGetColumns, dealParseObject(line.getString("sqlType")))
+              insert.insertJobStatusTraceLog(conn, tableInsertSql, tableTemp, tableGetColumns, newDataTemp)
+
+
             }
             case "UPDATE" => {
               driverPostingMainLog.info("执行Update==============")
-              update.updateJobStatusTraceLog(conn, tableGetUpdateSql, dealParseObject(line.getString("sqlType")),
-                dealParseObject(line.getString("old")), tableKeyColumns)
+              val oldDataTemp = line.getJSONArray("old").getJSONObject(0)
+                     update.updateJobStatusTraceLog(conn, tableGetUpdateSql,tableTemp,newDataTemp,oldDataTemp, tableKeyColumns)
             }
             case _ => ""
           }
         } catch {
           case e: Exception => e.printStackTrace()
         } finally {
-         // ckPoolUtil.closeConnection(conn)
+          // ckPoolUtil.closeConnection(conn)
+          ckPoolUtil.closeConnection(conn)
+
         }
 
       }
@@ -97,8 +104,11 @@ object driverPostingMain {
   def dealTableFilter(line: JSONObject): Boolean = {
 
     var filterDataBoolean = true
+
     val table: String = line.getString("table")
-    if (tableUtils.tableListArray.contains("com.yzs.data.sql."+table)) {
+    //"com.yzs.data.sql.job_status_trace_log"
+    // com.yzs.data.sql.job_status_trace_log
+    if (tableUtils.tableListArray.contains("com.yzs.data.sql." + table)) {
       filterDataBoolean = true
     } else {
       filterDataBoolean = false
@@ -108,8 +118,11 @@ object driverPostingMain {
 
   def dealParseObject(line: String): JSONObject = {
     //  println("原始接收到的数据："+line)
+
     driverPostingMainLog.info(line)
     JSON.parseObject(line)
 
   }
+
+
 }

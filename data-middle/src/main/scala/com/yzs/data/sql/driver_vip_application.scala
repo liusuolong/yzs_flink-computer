@@ -41,11 +41,30 @@ object driver_vip_application {
 ,VIP_GRADE
 ,REMARK
 ,OUT_REASON
-             )
+)
              VALUES(?,?,?,?,?,?,?,?,?,?,?)
             """
 
   //alter table  yzs_src.src_driver_vip_application update job_name='10' where id ='12' ;
   var UpdateSql ="alter table  yzs_src.src_driver_vip_application update  "
+  val columnTypeMap = Map(
+    "ID"->"Int32",
+    "CREATED_BY"->"String",
+    "CREATION_TIME"->"DateTime",
+    "LAST_UPDATE_TIME"->"DateTime",
+    "UPDATED_BY"->"String",
+    "VERSION"->"Int32",
+    "APPLICANT"->"String",
+    "APPLY_TIME"->"DateTime",
+    "APPROVE_TIME"->"DateTime",
+    "APPROVER"->"String",
+    "FAIL_REASON"->"String",
+    "NEED_APP_INSTRACTION"->"String",
+    "VIP_RULE_NOTIFIED"->"String",
+    "STATUS_ID"->"String",
+    "VIP_GRADE"->"String",
+    "REMARK"->"String",
+    "OUT_REASON"->"Int32"
+  )
 
 }

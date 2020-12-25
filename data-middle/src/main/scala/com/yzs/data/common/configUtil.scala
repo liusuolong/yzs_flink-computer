@@ -16,7 +16,7 @@ object configUtil extends Serializable {
 //    kafkaFilePath = "online/kafka.properties"
 //  }
   lazy val kafkaUtil = kafkaDealUtil.getKafkaUtilSingleton(kafkaFilePath)
-  lazy val clickHouse = clickHouseUtil.getClickHouseUtil(clickHousePath)
+ // lazy val clickHouse = clickHouseUtil.getClickHouseUtil(clickHousePath)
   lazy val ckPoolUtil = clickHousePoolUtil.getClickHousePoolUtil(clickHousePath)
  // lazy val tableListUtil = tableList.gettableListSingleton
 }

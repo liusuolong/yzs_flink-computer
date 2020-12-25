@@ -1,122 +1,86 @@
 package com.yzs.data.utils
 
 import java.sql.{Connection, ResultSet, SQLException, Statement}
+import java.util
 import java.util.Properties
 
-import com.alibaba.druid.pool.DruidDataSourceFactory
 import javax.sql.DataSource
 import org.apache.log4j.Logger
 
+import java.util.concurrent.ConcurrentHashMap
+//import com.jolbox.bonecp.{ BoneCPConfig, BoneCP }
+import java.util.ResourceBundle
+import java.util.LinkedList
+import java.sql.DriverManager
+import java.sql.Connection
+
+/**
+ * 数据库连接池工具类
+ * 语言：scala
+ * 时间：2016-07-09
+ */
 class clickHousePoolUtil(filePath:String) {
+  val properties = PropertiesUtil.getProperties(filePath)
+  println(properties)
 
-  private val LOG = Logger.getLogger(clickHousePoolUtil.getClass.getName)
-  println(filePath)
-  val dataSource: Option[DataSource] = {
-    try {
-      val druidProps = new Properties()
-      // 获取Druid连接池的配置文件
-      val druidConfig = getClass().getClassLoader().getResourceAsStream(filePath)
-      // 倒入配置文件
-      druidProps.load(druidConfig)
-      Some(DruidDataSourceFactory.createDataSource(druidProps))
-    } catch {
-      case error: Exception =>
-        LOG.error("Error Create Click Connection", error)
-        None
-    }
-  }
+  private val max_connection = properties.getProperty("clickhouse.max_connection") //连接池总数
+  private val connection_num = properties.getProperty("clickhouse.connection_num") //产生连接数
+  private var current_num = 0 //当前连接池已产生的连接数
+  private val pools = new LinkedList[Connection]() //连接池
+  private val driver = properties.getProperty("clickhouse.driver")
+  private val url = properties.getProperty("clickhouse.url")
+  private val username = properties.getProperty("clickhouse.username")
+  private val password = properties.getProperty("clickhouse.password")
 
   /**
-   * 得到数据源
+   * 加载驱动
    */
-  def  getDataSource():DataSource= {
-    return dataSource.get
-  }
-
-  // 连接方式
-  def getConnection(): Option[Connection] = {
-    dataSource match {
-      case Some(ds) => Some(ds.getConnection())
-      case None => None
+  private def before() {
+    if (current_num > max_connection.toInt && pools.isEmpty()) {
+      print("busyness")
+      Thread.sleep(2000)
+      before()
+    } else {
+      Class.forName(driver)
     }
   }
-
   /**
-   * 得到连接对象
+   * 获得连接
    */
-  def getConn: Connection = {
-    try {
-      return getConnection().get
-    } catch {
-      case e: SQLException => throw new RuntimeException(e)
-    }
+  private def initConn(): Connection = {
+    val conn = DriverManager.getConnection(url, username, password)
+    conn
   }
-
-  def executeStatement(conn: Connection, sql: String, args: Array[Any]): Unit = {
-    var preparedStatement = conn.prepareStatement(sql)
-    try {
-      for (index <- 1 to args.length) {
-        preparedStatement.setObject(index, args(index - 1))
-      }
-      preparedStatement.executeUpdate()
-    } catch {
-      case e: Exception => e.printStackTrace()
-    } finally {
-      closeStatement(preparedStatement)
-    }
-  }
-
   /**
-   * 释放资源
+   * 初始化连接池
    */
-  def close(conn: Connection, stmt: Statement, rs: ResultSet) = {
-    if (rs != null) {
-      try {
-        rs.close();
-      } catch {
-        case e: SQLException => e.printStackTrace()
+  private def initConnectionPool(): LinkedList[Connection] = {
+    AnyRef.synchronized({
+      if (pools.isEmpty()) {
+        before()
+        for (i <- 1 to connection_num.toInt) {
+          pools.push(initConn())
+          current_num += 1
+        }
       }
-    }
-    if (stmt != null) {
-      try {
-        stmt.close();
-      } catch {
-        case e: SQLException => e.printStackTrace()
-      }
-    }
-    if (conn != null) {
-      try {
-        conn.close();
-      } catch {
-        case e: SQLException => e.printStackTrace()
-      }
-    }
+      pools
+    })
+  }
+  /**
+   * 获得连接
+   */
+  def getConn():Connection={
+    initConnectionPool()
+    pools.poll()
+  }
+  /**
+   * 释放连接
+   */
+  def closeConnection(con:Connection){
+    pools.push(con)
   }
 
-  def closeStatement(stmt: Statement) = {
-    if (stmt != null) {
-      try {
-        stmt.close();
-      } catch {
-        case e: SQLException => e.printStackTrace()
-      }
-    }
-  }
-
-  def closeConnection(conn: Connection) = {
-    if (conn != null) {
-      try {
-        conn.close();
-      } catch {
-        case e: SQLException => e.printStackTrace()
-      }
-    }
-  }
-  def close(conn: Connection, stmt: Statement) {
-    close(conn, stmt, null);
-  }
 }
-
 object clickHousePoolUtil  {
 
 

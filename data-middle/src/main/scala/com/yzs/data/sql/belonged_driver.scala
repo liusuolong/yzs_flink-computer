@@ -127,7 +127,7 @@ object belonged_driver {
 ,HAS_ELECTRIC_MACHINERY
 ,TIME_BOUGHT_TRUCK
 ,IS_CUSTOMS_RECORD
-             )
+)
              VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
@@ -135,5 +135,68 @@ object belonged_driver {
 
   //alter table  yzs_src.src_belonged_driver update job_name='10' where id ='12' ;
   var UpdateSql ="alter table  yzs_src.src_belonged_driver update  "
+
+  val columnTypeMap = Map(
+    "ID"->"String",
+    "CREATED_BY"->"String",
+    "CREATION_TIME"->"DateTime",
+    "LAST_UPDATE_TIME"->"DateTime",
+    "UPDATED_BY"->"String",
+    "VERSION"->"Int32",
+    "ROAD_TRANSPORT_LICENSE_NUMBER"->"String",
+    "AUDIT_SUBMIT_TIME"->"DateTime",
+    "AUDIT_TIME"->"DateTime",
+    "AVATOR_IMAGE_PATH"->"String",
+    "DRIVER_ID"->"String",
+    "DRIVING_LICENSE_CLASS"->"String",
+    "DRIVING_LICENSE_FIRST_ISSUE_DATE"->"String",
+    "DRIVING_LICENSE_IMAGE_PATH"->"String",
+    "DRIVING_LICENSE_IMAGE_PATH_BACK"->"String",
+    "DRIVING_LICENSE_VALID_PERIOD_FROM"->"String",
+    "DRIVING_LICENSE_VALID_PERIOD_TO"->"String",
+    "ID_CARD_ADDRESS"->"String",
+    "ID_CARD_BIRTHDAY"->"String",
+    "ID_CARD_IMAGE_PATH"->"String",
+    "ID_CARD_IMAGE_PATH_FRONT"->"String",
+    "ID_CARD_NUMBER"->"String",
+    "ID_CARD_VALID_PERIOD_FROM"->"String",
+    "ID_CARD_VALID_PERIOD_TO"->"String",
+    "MANUFACTURE_YEAR"->"String",
+    "MOBILE_PHONE"->"String",
+    "NAME"->"String",
+    "TRUCK_AFFILIATED_COMPANY"->"String",
+    "TRUCK_ANNUAL_REVIEW_DEADLINE"->"String",
+    "TRUCK_BRAND"->"String",
+    "TRUCK_CURB_MASS"->"String",
+    "TRUCK_ENERGY_TYPE"->"String",
+    "TRUCK_ENGINE_NO"->"String",
+    "TRUCK_GROSS_MASS"->"String",
+    "TRUCK_LICENSE_IMAGE_PATH"->"String",
+    "TRUCK_LICENSE_IMAGE_PATH_BACK"->"String",
+    "TRUCK_LICENSE_IMAGE_PATH_LAST"->"String",
+    "TRUCK_LICENSE_ISSUE_DATE"->"String",
+    "TRUCK_LICENSE_REGISTER_DATE"->"String",
+    "TRUCK_MODEL"->"String",
+    "TRUCK_OVERALL_DIMENSION_HEIGHT"->"Float32",
+    "TRUCK_OVERALL_DIMENSION_LENGTH"->"Float32",
+    "TRUCK_OVERALL_DIMENSION_WIDTH"->"Float32",
+    "TRUCK_PLATE_NUMBER"->"String",
+    "TRUCK_TRACTION_MASS"->"String",
+    "TRUCK_TYPE"->"String",
+    "TRUCK_VIN"->"String",
+    "AUDIT_STATUS_ID"->"String",
+    "LATEST_AUDIT_LOG_ID"->"Int32",
+    "TRUCK_HEAD_IMAGE"->"String",
+    "IS_CNSS_READY"->"String",
+    "VIP_GRADE_ID"->"Int32",
+    "BIRTH_YEAR"->"Int32",
+    "IS_TRUCK_45"->"String",
+    "TURNS"->"Int32",
+    "TRUCK_CHASSIS_TYPE"->"String",
+    "TRUCK_CHASSIS_HEIGHT"->"String",
+    "HAS_ELECTRIC_MACHINERY"->"String",
+    "TIME_BOUGHT_TRUCK"->"DateTime",
+    "IS_CUSTOMS_RECORD"->"String"
+  )
 
 }
