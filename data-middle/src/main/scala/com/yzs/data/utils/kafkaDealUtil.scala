@@ -13,7 +13,7 @@ class kafkaDealUtil(filePath: String) extends Serializable {
   //配置kafka
   val topic = properties.getProperty("topic")
 
-  val group = Set(properties.getProperty("group.id"))
+ //val group = Set(properties.getProperty("group.id"))
   val brokers = properties.getProperty("brokers")
   val serializerClass = properties.getProperty("serializerClass")
   val offset = properties.getProperty("auto.offset.reset")
@@ -29,9 +29,9 @@ class kafkaDealUtil(filePath: String) extends Serializable {
   }
 
 
-  def getKafkaUtilSingleton(filePath: String): kafkaDealUtil = {
+  /*def getKafkaUtilSingleton(filePath: String): kafkaDealUtil = {
     new kafkaDealUtil(filePath)
-  }
+  }*/
 }
 
 

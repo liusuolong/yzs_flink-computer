@@ -62,7 +62,7 @@ object user {
     , "DROP_DEPOT_ID"
     , "PREV_STATUS_ID"
   )
-  val KeyColumns = Array("id")
+  val KeyColumns = Array("ID")
   var InsertSql =
     """
              INSERT INTO yzs_src.src_user  (

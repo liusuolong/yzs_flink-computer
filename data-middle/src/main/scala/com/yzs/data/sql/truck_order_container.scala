@@ -145,7 +145,7 @@ object truck_order_container {
     ,"HAS_PLEDGES"
     ,"HAS_DISPATCHED"
   )
-  val KeyColumns=Array("id")
+  val KeyColumns=Array("ID")
   var InsertSql = """
              INSERT INTO yzs_src.src_truck_order_container  (
              ID

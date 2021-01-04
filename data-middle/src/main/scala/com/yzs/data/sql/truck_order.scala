@@ -69,7 +69,7 @@ object truck_order {
     , "CTN_OPERATOR_CODE"
     , "FORWARDER_ORDER_ID"
   )
-  val KeyColumns = Array("id")
+  val KeyColumns = Array("ID")
   var InsertSql =
     """
              INSERT INTO yzs_src.src_truck_order  (

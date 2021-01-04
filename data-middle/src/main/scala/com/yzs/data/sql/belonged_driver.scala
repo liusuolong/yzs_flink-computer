@@ -64,7 +64,7 @@ object belonged_driver {
     ,"TIME_BOUGHT_TRUCK"
     ,"IS_CUSTOMS_RECORD"
   )
-  val KeyColumns=Array("id")
+  val KeyColumns=Array("ID")
   var InsertSql = """
              INSERT INTO yzs_src.src_belonged_driver  (
              ID

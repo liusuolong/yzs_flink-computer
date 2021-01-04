@@ -12,85 +12,39 @@ import com.yzs.data.common.configUtil._
 import com.yzs.data.sql.tableUtils
 import com.yzs.data.utils.clickHousePoolUtil
 import org.apache.flink.contrib.streaming.state.RocksDBStateBackend
+import org.apache.flink.runtime.state.memory.MemoryStateBackend
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.log4j.{Level, Logger}
+//隐式转换
+import org.apache.flink.api.scala._
 
 
 object driverPostingMain {
-  private val driverPostingMainLog = Logger.getLogger(driverPostingMain.getClass.getName)
+  final val driverPostingMainLog = Logger.getLogger(driverPostingMain.getClass.getName)
+  final val insert = clickHouseInsert.getClickHouseInsertSingleton()
+  final val update = clickHouseUpdate.getClickHouseUpdateSingleton()
+  val groupName = "driverPostingMain2"
 
   def main(args: Array[String]): Unit = {
-    @transient
-    //   var conn: Connection = null
+
     val env = StreamExecutionEnvironment.getExecutionEnvironment
-    val insert = clickHouseInsert.getClickHouseInsertSingleton()
-    val update = clickHouseUpdate.getClickHouseUpdateSingleton()
 
-    val groupName = "driverPostingMain2"
-    //隐式转换
-    import org.apache.flink.api.scala._
-    //checkpoint配置
-    env.enableCheckpointing(5000);
-    env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
-    env.getCheckpointConfig.setMinPauseBetweenCheckpoints(500);
-    env.getCheckpointConfig.setCheckpointTimeout(60000);
-    env.getCheckpointConfig.setMaxConcurrentCheckpoints(1);
-    env.getCheckpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
-
-    //设置statebackend
-    //  env.setStateBackend(new RocksDBStateBackend("hdfs://47.103.34.147:9000/flink/checkpoints",true));
+    //setCheckpointConfig(env)
+    checkPointUtils.setCheckpointConfig(env)
 
     val myConsumer = kafkaUtil.getDirectStream(env, groupName)
     driverPostingMainLog.info("执行INSERT before==============")
-
     //指定偏移量
     //myConsumer.setStartFromEarliest
-
     val source = env.addSource(myConsumer)
-    // source.print()
+
     source.setParallelism(5).filter(line => {
       dealTableFilter(dealParseObject(line))
 
     }).map(
       temp => {
-        // conn = ckPoolUtil.getConn
-        val conn = ckPoolUtil.getConn()
-        try {
-
-          val line = dealParseObject(temp)
-          val tableTemp = line.getString("table")
-          val execTemp = line.getString("type")
-          val tableKeyColumns = tableUtils.getKeyColumns(tableTemp)
-          val tableGetColumns = tableUtils.getColumns(tableTemp)
-          val tableInsertSql = tableUtils.getInsertSql(tableTemp)
-          val tableGetUpdateSql = tableUtils.getUpdateSql(tableTemp)
-          val newDataTemp = dealParseObject(line.getString("sqlType"))
-          driverPostingMainLog.info("执行INSERT before==============")
-
-          execTemp match {
-            case "INSERT" => {
-              driverPostingMainLog.info("执行INSERT==============")
-              insert.insertJobStatusTraceLog(conn, tableInsertSql, tableTemp, tableGetColumns, newDataTemp)
-
-
-            }
-            case "UPDATE" => {
-              driverPostingMainLog.info("执行Update==============")
-              val oldDataTemp = line.getJSONArray("old").getJSONObject(0)
-                     update.updateJobStatusTraceLog(conn, tableGetUpdateSql,tableTemp,newDataTemp,oldDataTemp, tableKeyColumns)
-            }
-            case _ => ""
-          }
-        } catch {
-          case e: Exception => e.printStackTrace()
-        } finally {
-          // ckPoolUtil.closeConnection(conn)
-          ckPoolUtil.closeConnection(conn)
-
-        }
-
+        dealDataConn(temp)
       }
-
     )
 
     //val value = mapFliter.keyBy("reduce").timeWindow(Time.seconds(2))
@@ -101,14 +55,76 @@ object driverPostingMain {
 
   }
 
+/*
+
+  def setCheckpointConfig(env: StreamExecutionEnvironment): Unit = {
+    //checkpoint配置
+    env.enableCheckpointing(5000); //检查点间隔1000ms
+    env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE); //set mode to exactly-once (this is the default)设置模式
+    env.getCheckpointConfig.setMinPauseBetweenCheckpoints(500); //确保检查点之间有至少500 ms的间隔【checkpoint最小间隔】
+    env.getCheckpointConfig.setCheckpointTimeout(60000); //检查点必须在一分钟内完成，或者被丢弃【checkpoint的超时时间】
+    env.getCheckpointConfig.setMaxConcurrentCheckpoints(1); //同一时间只允许进行一个检查点
+    //表示一旦Flink处理程序被cancel后，会保留Checkpoint数据，以便根据实际需要恢复到指定的Checkpoint
+    env.getCheckpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+
+    //设置statebackend
+    //  env.setStateBackend(new MemoryStateBackend());
+    //  env.setStateBackend(new RocksDBStateBackend("hdfs://47.103.34.147:9000/flink/checkpoints",true));
+  }
+*/
+
+
+  def dealDataConn(temp: String): Unit = {
+
+    // conn = ckPoolUtil.getConn
+    val conn = ckPoolUtil.getConn()
+    try {
+      println("ALL============"+temp)
+      val line = dealParseObject(temp)
+      val tableTemp = line.getString("table")
+      val execTemp = line.getString("type")
+      val tableKeyColumns = tableUtils.getKeyColumns(tableTemp)
+      val tableGetColumns = tableUtils.getColumns(tableTemp)
+      val tableInsertSql = tableUtils.getInsertSql(tableTemp)
+      val tableGetUpdateSql = tableUtils.getUpdateSql(tableTemp)
+      val newDataTemp = dealParseObject(line.getString("sqlType"))
+      println("NEW===================" + newDataTemp)
+
+     // driverPostingMainLog.info("执行INSERT before==============")
+
+      execTemp match {
+        case "INSERT" => {
+          //driverPostingMainLog.info("执行INSERT==============")
+          insert.insertDataDeal(conn, tableInsertSql, tableTemp, tableGetColumns, newDataTemp)
+
+
+        }
+        case "UPDATE" => {
+         // driverPostingMainLog.info("执行Update==============")
+          val oldDataTemp = line.getJSONArray("old").getJSONObject(0)
+          println("old=============== " + oldDataTemp)
+          update.updateDataDeal(conn, tableGetUpdateSql, tableTemp, newDataTemp, oldDataTemp, tableKeyColumns)
+        }
+        case _ => ""
+      }
+    } catch {
+      case e: Exception => e.printStackTrace()
+    } finally {
+      // ckPoolUtil.closeConnection(conn)
+      ckPoolUtil.closeConnection(conn)
+
+    }
+  }
+
   def dealTableFilter(line: JSONObject): Boolean = {
 
     var filterDataBoolean = true
-
     val table: String = line.getString("table")
     //"com.yzs.data.sql.job_status_trace_log"
     // com.yzs.data.sql.job_status_trace_log
-    if (tableUtils.tableListArray.contains("com.yzs.data.sql." + table)) {
+     if (tableUtils.tableListArray.contains("com.yzs.data.sql." + table)) {
+    //if (table.equals("driver_vip_application")) {
+
       filterDataBoolean = true
     } else {
       filterDataBoolean = false

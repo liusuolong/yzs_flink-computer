@@ -2,9 +2,8 @@ package com.yzs.data.sql
 
 
 object tableUtils extends Serializable {
-  val tableListArray = Array("com.yzs.data.sql.job_status_trace_log"
-    , "com.yzs.data.sql.job_execution_log"
-    , "com.yzs.data.sql.driver_posting"
+  val tableListArray = Array(
+     "com.yzs.data.sql.driver_posting"
     , "com.yzs.data.sql.truck_order_container"
     , "com.yzs.data.sql.truck_order"
     , "com.yzs.data.sql.user"
@@ -16,14 +15,14 @@ object tableUtils extends Serializable {
   def getColumnsType(tableName: String, ColumnName: String): String = {
     val temp = getTableClass(tableName)
     temp match {
-      case 0 => job_status_trace_log.columnTypeMap.get(ColumnName).toString
-      case 1 => job_execution_log.columnTypeMap.get(ColumnName).toString
-      case 2 => driver_posting.columnTypeMap.get(ColumnName).toString
-      case 3 => truck_order_container.columnTypeMap.get(ColumnName).toString
-      case 4 => truck_order.columnTypeMap.get(ColumnName).toString
-      case 5 => user.columnTypeMap.get(ColumnName).toString
-      case 6 => driver_vip_application.columnTypeMap.get(ColumnName).toString
-      case 7 => belonged_driver.columnTypeMap.get(ColumnName).toString
+     // case 0 => job_status_trace_log.columnTypeMap.get(ColumnName).toString
+     // case 1 => job_execution_log.columnTypeMap.get(ColumnName).toString
+      case 0 => driver_posting.columnTypeMap.get(ColumnName).toString
+      case 1=> truck_order_container.columnTypeMap.get(ColumnName).toString
+      case 2 => truck_order.columnTypeMap.get(ColumnName).toString
+      case 3 => user.columnTypeMap.get(ColumnName).toString
+      case 4 => driver_vip_application.columnTypeMap.get(ColumnName).toString
+      case 5 => belonged_driver.columnTypeMap.get(ColumnName).toString
 
       case _ => ""
     }
@@ -35,14 +34,14 @@ object tableUtils extends Serializable {
     val temp = getTableClass(tableName)
 
     val gettableNameTemp = temp match {
-      case 0 => job_status_trace_log.tableName
-      case 1 => job_execution_log.tableName
-      case 2 => driver_posting.tableName
-      case 3 => truck_order_container.tableName
-      case 4 => truck_order.tableName
-      case 5 => user.tableName
-      case 6 => driver_vip_application.tableName
-      case 7 => belonged_driver.tableName
+      //case 0 => job_status_trace_log.tableName
+      //case 1 => job_execution_log.tableName
+      case 0 => driver_posting.tableName
+      case 1 => truck_order_container.tableName
+      case 2 => truck_order.tableName
+      case 3 => user.tableName
+      case 4 => driver_vip_application.tableName
+      case 5 => belonged_driver.tableName
 
       case _ => ""
     }
@@ -53,14 +52,14 @@ object tableUtils extends Serializable {
     val temp = getTableClass(tableName)
 
     val getColumnsTemp = temp match {
-      case 0 => job_status_trace_log.Columns
-      case 1 => job_execution_log.Columns
-      case 2 => driver_posting.Columns
-      case 3 => truck_order_container.Columns
-      case 4 => truck_order.Columns
-      case 5 => user.Columns
-      case 6 => driver_vip_application.Columns
-      case 7 => belonged_driver.Columns
+//      case 1 => job_execution_log.Columns
+//      case 0 => job_status_trace_log.Columns
+      case 0 => driver_posting.Columns
+      case 1 => truck_order_container.Columns
+      case 2 => truck_order.Columns
+      case 3 => user.Columns
+      case 4 => driver_vip_application.Columns
+      case 5 => belonged_driver.Columns
 
       case _ => Array[String] {
         ""
@@ -73,14 +72,14 @@ object tableUtils extends Serializable {
     val temp = getTableClass(tableName)
 
     val getInsertSql = temp match {
-      case 0 => job_status_trace_log.InsertSql
-      case 1 => job_execution_log.InsertSql
-      case 2 => driver_posting.InsertSql
-      case 3 => truck_order_container.InsertSql
-      case 4 => truck_order.InsertSql
-      case 5 => user.InsertSql
-      case 6 => driver_vip_application.InsertSql
-      case 7 => belonged_driver.InsertSql
+//      case 0 => job_status_trace_log.InsertSql
+//      case 1 => job_execution_log.InsertSql
+      case 0 => driver_posting.InsertSql
+      case 1 => truck_order_container.InsertSql
+      case 2 => truck_order.InsertSql
+      case 3 => user.InsertSql
+      case 4 => driver_vip_application.InsertSql
+      case 5 => belonged_driver.InsertSql
       case _ => ""
     }
     getInsertSql
@@ -91,14 +90,14 @@ object tableUtils extends Serializable {
     val temp = getTableClass(tableName)
 
     val getUpdateSql = temp match {
-      case 0 => job_status_trace_log.UpdateSql
-      case 1 => job_execution_log.UpdateSql
-      case 2 => driver_posting.UpdateSql
-      case 3 => truck_order_container.UpdateSql
-      case 4 => truck_order.UpdateSql
-      case 5 => user.UpdateSql
-      case 6 => driver_vip_application.UpdateSql
-      case 7 => belonged_driver.UpdateSql
+//      case 0 => job_status_trace_log.UpdateSql
+//      case 1 => job_execution_log.UpdateSql
+      case 0 => driver_posting.UpdateSql
+      case 1 => truck_order_container.UpdateSql
+      case 2 => truck_order.UpdateSql
+      case 3 => user.UpdateSql
+      case 4 => driver_vip_application.UpdateSql
+      case 5 => belonged_driver.UpdateSql
       case _ => ""
     }
     getUpdateSql
@@ -108,14 +107,14 @@ object tableUtils extends Serializable {
     val temp = getTableClass(tableName)
 
     temp match {
-      case 0 => job_status_trace_log.KeyColumns
-      case 1 => job_execution_log.KeyColumns
-      case 2 => driver_posting.KeyColumns
-      case 3 => truck_order_container.KeyColumns
-      case 4 => truck_order.KeyColumns
-      case 5 => user.KeyColumns
-      case 6 => driver_vip_application.KeyColumns
-      case 7 => belonged_driver.KeyColumns
+//      case 0 => job_status_trace_log.KeyColumns
+//      case 1 => job_execution_log.KeyColumns
+      case 0 => driver_posting.KeyColumns
+      case 1 => truck_order_container.KeyColumns
+      case 2 => truck_order.KeyColumns
+      case 3 => user.KeyColumns
+      case 4 => driver_vip_application.KeyColumns
+      case 5 => belonged_driver.KeyColumns
       case _ => Array {
         ""
       }

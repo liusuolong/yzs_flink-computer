@@ -31,7 +31,7 @@ object driver_posting {
     ,"has_read"
     ,"container_id"
   )
-  val KeyColumns=Array("id")
+  val KeyColumns=Array("ID")
   var InsertSql = """
              INSERT INTO yzs_src.src_driver_posting  (
 ID

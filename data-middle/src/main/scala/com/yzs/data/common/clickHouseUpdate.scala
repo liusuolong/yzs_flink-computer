@@ -12,8 +12,8 @@ import com.yzs.data.sql.tableUtils
 class clickHouseUpdate extends Serializable {
 
 
-  def updateJobStatusTraceLog(conn: Connection, sql: String, tableTemp: String, sqlType: JSONObject,
-                              oldData: JSONObject, keyName: Array[String]): Unit = {
+  def updateDataDeal(conn: Connection, sql: String, tableTemp: String, sqlType: JSONObject,
+                     oldData: JSONObject, keyName: Array[String]): Unit = {
 
     //complete_time=?  AND is_success=?
 
@@ -31,8 +31,8 @@ class clickHouseUpdate extends Serializable {
 
         // prepareState.setString(i, sqlType.getString(cloNameTemp))
         typeTemp = tableUtils.getColumnsType(tableTemp, cloNameTemp)
-        dealColumnsUpdateType(oldData,typeTemp, prepareState, cloNameTemp, i)
-
+      //  dealColumnsUpdateType(oldData,typeTemp, prepareState, cloNameTemp, i)
+       dealColumnsUpdateType(sqlType,typeTemp, prepareState, cloNameTemp, i)
         i = i + 1
       }
       for (entry <- 0 to keyName.length - 1) {
@@ -69,13 +69,13 @@ class clickHouseUpdate extends Serializable {
       }
       case "Int8" | "Int16" | "Int32" | "UInt8" | "UInt16" | "UInt32" |
            "Some(Int8)" | "Some(Int16)" | "Some(Int32)" | "Some(UInt8)" | "Some(UInt16)" | "Some(UInt32)" => {
-        val Ck = println(11111)
+    //    val Ck = println(11111)
 
         prepareState.setInt(i, sqlType.getInteger(columnNameTemp))
       }
       case "Float" | "Float32" | "Float64" |
            "Some(Float)" | "Some(Float32)" | "Some(Float64)" => {
-        val Ck = println(11111)
+    //    val Ck = println(11111)
         prepareState.setFloat(i, sqlType.getFloat(columnNameTemp))
       }
       case _ => {
@@ -122,7 +122,7 @@ class clickHouseUpdate extends Serializable {
     for (entry <- 0 to keyName.length - 1) {
       val cloName = keyName(entry)
       if (sqlNameWhereStringTmp.equals("")) {
-        sqlNameWhereStringTmp = cloName + "=? "
+        sqlNameWhereStringTmp = cloName + "=?"
       } else {
         sqlNameWhereStringTmp = sqlNameWhereStringTmp + " AND " + cloName + "=? "
       }
