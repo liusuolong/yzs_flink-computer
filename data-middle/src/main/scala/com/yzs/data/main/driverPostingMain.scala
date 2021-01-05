@@ -90,7 +90,7 @@ object driverPostingMain {
       val tableGetColumns = tableUtils.getColumns(tableTemp)
       val tableInsertSql = tableUtils.getInsertSql(tableTemp)
       val tableGetUpdateSql = tableUtils.getUpdateSql(tableTemp)
-      val newDataTemp = dealParseObject(line.getString("sqlType"))
+      val newDataTemp = dealParseObject(line.getString("data"))
       println("NEW===================" + newDataTemp)
 
      // driverPostingMainLog.info("执行INSERT before==============")
