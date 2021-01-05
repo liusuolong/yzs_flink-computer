@@ -2,6 +2,8 @@ package com.yzs.data.main
 
 
 import java.sql.Connection
+import java.text.SimpleDateFormat
+import java.util.Date
 
 import com.alibaba.fastjson.{JSON, JSONObject}
 import com.yzs.data.common.{clickHouseInsert, clickHouseUpdate}
@@ -10,6 +12,7 @@ import org.apache.flink.streaming.api.environment.CheckpointConfig
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import com.yzs.data.common.configUtil._
 import com.yzs.data.sql.tableUtils
+import com.yzs.data.utils.DateUtil.getSysDateStamp
 import com.yzs.data.utils.clickHousePoolUtil
 import org.apache.flink.contrib.streaming.state.RocksDBStateBackend
 import org.apache.flink.runtime.state.memory.MemoryStateBackend
@@ -82,7 +85,7 @@ object driverPostingMain {
     // conn = ckPoolUtil.getConn
     val conn = ckPoolUtil.getConn()
     try {
-      println("ALL============"+temp)
+      println(getSysDateStamp()+"ALL============"+temp)
       val line = dealParseObject(temp)
       val tableTemp = line.getString("table")
       val execTemp = line.getString("type")
@@ -91,7 +94,7 @@ object driverPostingMain {
       val tableInsertSql = tableUtils.getInsertSql(tableTemp)
       val tableGetUpdateSql = tableUtils.getUpdateSql(tableTemp)
       val newDataTemp = dealParseObject(line.getString("data"))
-      println("NEW===================" + newDataTemp)
+      println( getSysDateStamp()+"NEW===================" + newDataTemp)
 
      // driverPostingMainLog.info("执行INSERT before==============")
 
@@ -105,7 +108,7 @@ object driverPostingMain {
         case "UPDATE" => {
          // driverPostingMainLog.info("执行Update==============")
           val oldDataTemp = line.getJSONArray("old").getJSONObject(0)
-          println("old=============== " + oldDataTemp)
+          println(getSysDateStamp()+"old=============== " + oldDataTemp)
           update.updateDataDeal(conn, tableGetUpdateSql, tableTemp, newDataTemp, oldDataTemp, tableKeyColumns)
         }
         case _ => ""
