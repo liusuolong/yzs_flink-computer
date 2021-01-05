@@ -13,6 +13,8 @@
 -c com.yzs.data.main.driverPostingMain  \
 /root/flink/data-middle-1.0-SNAPSHOT.jar
 
+
+
 #查询列表
 ./flink list --all
 
