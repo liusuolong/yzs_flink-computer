@@ -5,6 +5,10 @@ import org.apache.flink.streaming.api.CheckpointingMode
 import org.apache.flink.streaming.api.environment.CheckpointConfig
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import java.io.IOException
+import java.util.concurrent.TimeUnit
+
+import org.apache.flink.api.common.restartstrategy.RestartStrategies
+import org.apache.flink.api.common.time.Time
 
 class checkPointUtil(filePath: String) extends Serializable {
   val properties = PropertiesUtil.getProperties(filePath)
@@ -25,6 +29,17 @@ class checkPointUtil(filePath: String) extends Serializable {
     env.getCheckpointConfig.setMinPauseBetweenCheckpoints(setMinPauseBetweenCheckpoints); //确保检查点之间有至少500 ms的间隔【checkpoint最小间隔】
     env.getCheckpointConfig.setCheckpointTimeout(setCheckpointTimeout); //检查点必须在一分钟内完成，或者被丢弃【checkpoint的超时时间】
     env.getCheckpointConfig.setMaxConcurrentCheckpoints(setMaxConcurrentCheckpoints); //同一时间只允许进行一个检查点
+
+    //env.enableCheckpointing(1000L,CheckpointingMode.AT_LEAST_ONCE)
+     env.setRestartStrategy(RestartStrategies.noRestart())
+    env.getCheckpointConfig.enableExternalizedCheckpoints(
+      CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION)
+    env.getCheckpointConfig.setFailOnCheckpointingErrors(true)
+    //重启策略
+    env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
+      3, // 尝试重启的次数
+      Time.of(10, TimeUnit.SECONDS) // 间隔
+    ));
     //设置statebackend
     try (
 

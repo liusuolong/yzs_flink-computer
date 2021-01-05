@@ -18,7 +18,7 @@ object dmDriverChatRecordMain {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
 
 //    setCheckpointConfig(env)
-    checkPointUtils.setCheckpointConfig(env)
+   // checkPointUtils.setCheckpointConfig(env)
     val dmDriverChatRecord = kafkaUtil.getDirectStream(env, groupName)
 
     //myConsumer.setStartFromEarliest

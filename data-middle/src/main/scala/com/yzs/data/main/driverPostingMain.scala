@@ -34,11 +34,14 @@ object driverPostingMain {
 
     val myConsumer = kafkaUtil.getDirectStream(env, groupName)
     driverPostingMainLog.info("执行INSERT before==============")
-    //指定偏移量
-    //myConsumer.setStartFromEarliest
+
+
+    // Flink从topic中指定的group上次消费的位置开始消费，所以必须配置group.id参数
+    myConsumer.setStartFromGroupOffsets();
+
     val source = env.addSource(myConsumer)
 
-    source.setParallelism(5).filter(line => {
+    source.filter(line => {
       dealTableFilter(dealParseObject(line))
 
     }).map(
