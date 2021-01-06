@@ -13,6 +13,8 @@
 -c com.yzs.data.main.driverPostingMain  \
 /root/flink/data-middle-1.0-SNAPSHOT.jar
 
+#任务槽设置
+--yarnslots 3
 
 
 #查询列表

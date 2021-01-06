@@ -44,7 +44,7 @@ object driverPostingMain {
 
     val source = env.addSource(myConsumer)
 
-    source.filter(line => {
+    source.setParallelism(4).filter(line => {
       dealTableFilter(dealParseObject(line))
 
     }).map(
@@ -61,23 +61,23 @@ object driverPostingMain {
 
   }
 
-/*
+  /*
 
-  def setCheckpointConfig(env: StreamExecutionEnvironment): Unit = {
-    //checkpoint配置
-    env.enableCheckpointing(5000); //检查点间隔1000ms
-    env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE); //set mode to exactly-once (this is the default)设置模式
-    env.getCheckpointConfig.setMinPauseBetweenCheckpoints(500); //确保检查点之间有至少500 ms的间隔【checkpoint最小间隔】
-    env.getCheckpointConfig.setCheckpointTimeout(60000); //检查点必须在一分钟内完成，或者被丢弃【checkpoint的超时时间】
-    env.getCheckpointConfig.setMaxConcurrentCheckpoints(1); //同一时间只允许进行一个检查点
-    //表示一旦Flink处理程序被cancel后，会保留Checkpoint数据，以便根据实际需要恢复到指定的Checkpoint
-    env.getCheckpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+    def setCheckpointConfig(env: StreamExecutionEnvironment): Unit = {
+      //checkpoint配置
+      env.enableCheckpointing(5000); //检查点间隔1000ms
+      env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE); //set mode to exactly-once (this is the default)设置模式
+      env.getCheckpointConfig.setMinPauseBetweenCheckpoints(500); //确保检查点之间有至少500 ms的间隔【checkpoint最小间隔】
+      env.getCheckpointConfig.setCheckpointTimeout(60000); //检查点必须在一分钟内完成，或者被丢弃【checkpoint的超时时间】
+      env.getCheckpointConfig.setMaxConcurrentCheckpoints(1); //同一时间只允许进行一个检查点
+      //表示一旦Flink处理程序被cancel后，会保留Checkpoint数据，以便根据实际需要恢复到指定的Checkpoint
+      env.getCheckpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
-    //设置statebackend
-    //  env.setStateBackend(new MemoryStateBackend());
-    //  env.setStateBackend(new RocksDBStateBackend("hdfs://47.103.34.147:9000/flink/checkpoints",true));
-  }
-*/
+      //设置statebackend
+      //  env.setStateBackend(new MemoryStateBackend());
+      //  env.setStateBackend(new RocksDBStateBackend("hdfs://47.103.34.147:9000/flink/checkpoints",true));
+    }
+  */
 
 
   def dealDataConn(temp: String): Unit = {
@@ -85,7 +85,7 @@ object driverPostingMain {
     // conn = ckPoolUtil.getConn
     val conn = ckPoolUtil.getConn()
     try {
-      println(getSysDateStamp()+"ALL============"+temp)
+      println(getSysDateStamp() + "ALL============" + temp)
       val line = dealParseObject(temp)
       val tableTemp = line.getString("table")
       val execTemp = line.getString("type")
@@ -93,10 +93,11 @@ object driverPostingMain {
       val tableGetColumns = tableUtils.getColumns(tableTemp)
       val tableInsertSql = tableUtils.getInsertSql(tableTemp)
       val tableGetUpdateSql = tableUtils.getUpdateSql(tableTemp)
-      val newDataTemp = dealParseObject(line.getString("data"))
-      println( getSysDateStamp()+"NEW===================" + newDataTemp)
+      //  val newDataTemp = dealParseObject(line.getString("data"))
+      val newDataTemp = line.getJSONArray("data").getJSONObject(0)
+      println(getSysDateStamp() + "NEW===================" + newDataTemp)
 
-     // driverPostingMainLog.info("执行INSERT before==============")
+      // driverPostingMainLog.info("执行INSERT before==============")
 
       execTemp match {
         case "INSERT" => {
@@ -106,9 +107,9 @@ object driverPostingMain {
 
         }
         case "UPDATE" => {
-         // driverPostingMainLog.info("执行Update==============")
+          // driverPostingMainLog.info("执行Update==============")
           val oldDataTemp = line.getJSONArray("old").getJSONObject(0)
-          println(getSysDateStamp()+"old=============== " + oldDataTemp)
+          println(getSysDateStamp() + "old=============== " + oldDataTemp)
           update.updateDataDeal(conn, tableGetUpdateSql, tableTemp, newDataTemp, oldDataTemp, tableKeyColumns)
         }
         case _ => ""
@@ -128,8 +129,8 @@ object driverPostingMain {
     val table: String = line.getString("table")
     //"com.yzs.data.sql.job_status_trace_log"
     // com.yzs.data.sql.job_status_trace_log
-     if (tableUtils.tableListArray.contains("com.yzs.data.sql." + table)) {
-    //if (table.equals("driver_vip_application")) {
+    if (tableUtils.tableListArray.contains("com.yzs.data.sql." + table)) {
+      //if (table.equals("driver_vip_application")) {
 
       filterDataBoolean = true
     } else {
