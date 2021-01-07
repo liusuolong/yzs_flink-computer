@@ -12,7 +12,7 @@ import com.yzs.data.sql.tableUtils
 class clickHouseUpdate extends Serializable {
 
 
-  def updateDataDeal(conn: Connection, sql: String, tableTemp: String, sqlType: JSONObject,
+  def updateDataDeal(conn: Connection, sql: String, tableTemp: String, newDataTemp: JSONObject,
                      oldData: JSONObject, keyName: Array[String]): Unit = {
 
     //complete_time=?  AND is_success=?
@@ -32,12 +32,12 @@ class clickHouseUpdate extends Serializable {
         // prepareState.setString(i, sqlType.getString(cloNameTemp))
         typeTemp = tableUtils.getColumnsType(tableTemp, cloNameTemp)
       //  dealColumnsUpdateType(oldData,typeTemp, prepareState, cloNameTemp, i)
-       dealColumnsUpdateType(sqlType,typeTemp, prepareState, cloNameTemp, i)
+       dealColumnsUpdateType(newDataTemp,typeTemp, prepareState, cloNameTemp, i)
         i = i + 1
       }
       for (entry <- 0 to keyName.length - 1) {
         cloNameTemp == keyName(entry)
-          prepareState.setString(i, sqlType.getString(cloNameTemp))
+          prepareState.setString(i, newDataTemp.getString(cloNameTemp))
         i = i + 1
       }
       prepareState.executeUpdate
@@ -140,7 +140,7 @@ class clickHouseUpdate extends Serializable {
       if (sqlNameStringTemp.equals("")) {
         sqlNameStringTemp = cloNameTemp + "=? "
       } else {
-        sqlNameStringTemp = sqlNameStringTemp + " AND " + cloNameTemp + "=? "
+        sqlNameStringTemp = sqlNameStringTemp + " , " + cloNameTemp + "=? "
 
       }
     }

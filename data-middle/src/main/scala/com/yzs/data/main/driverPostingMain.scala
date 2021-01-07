@@ -44,7 +44,7 @@ object driverPostingMain {
 
     val source = env.addSource(myConsumer)
 
-    source.setParallelism(4).filter(line => {
+    source.filter(line => {
       dealTableFilter(dealParseObject(line))
 
     }).map(
