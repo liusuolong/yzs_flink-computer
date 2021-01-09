@@ -14,6 +14,7 @@ import com.yzs.data.common.configUtil._
 import com.yzs.data.sql.tableUtils
 import com.yzs.data.utils.DateUtil.getSysDateStamp
 import com.yzs.data.utils.clickHousePoolUtil
+import org.apache.commons.lang3.StringUtils
 import org.apache.flink.contrib.streaming.state.RocksDBStateBackend
 import org.apache.flink.runtime.state.memory.MemoryStateBackend
 import org.apache.flink.streaming.api.windowing.time.Time
@@ -81,34 +82,39 @@ object driverPostingMain {
 
 
   def dealDataConn(temp: String): Unit = {
-
+    var line: JSONObject = null
+    var execTemp: String = null
+    var tableTemp: String = null
+    var tableKeyColumns: Array[String] = null
+    var newDataTemp:JSONObject=null
     // conn = ckPoolUtil.getConn
     val conn = ckPoolUtil.getConn()
     try {
       println(getSysDateStamp() + "ALL============" + temp)
-      val line = dealParseObject(temp)
-      val tableTemp = line.getString("table")
-      val execTemp = line.getString("type")
-      val tableKeyColumns = tableUtils.getKeyColumns(tableTemp)
-      val tableGetColumns = tableUtils.getColumns(tableTemp)
-      val tableInsertSql = tableUtils.getInsertSql(tableTemp)
-      val tableGetUpdateSql = tableUtils.getUpdateSql(tableTemp)
+      line = dealParseObject(temp)
+      tableTemp = line.getString("table")
+      execTemp = line.getString("type")
       //  val newDataTemp = dealParseObject(line.getString("data"))
-      val newDataTemp = line.getJSONArray("data").getJSONObject(0)
+       newDataTemp = line.getJSONArray("data").getJSONObject(0)
       println(getSysDateStamp() + "NEW===================" + newDataTemp)
 
       // driverPostingMainLog.info("执行INSERT before==============")
 
       execTemp match {
         case "INSERT" => {
+          val tableGetColumns = tableUtils.getColumns(tableTemp)
+          val tableInsertSql = tableUtils.getInsertSql(tableTemp)
           //driverPostingMainLog.info("执行INSERT==============")
           insert.insertDataDeal(conn, tableInsertSql, tableTemp, tableGetColumns, newDataTemp)
 
 
         }
         case "UPDATE" => {
+          val tableGetUpdateSql = tableUtils.getUpdateSql(tableTemp)
           // driverPostingMainLog.info("执行Update==============")
           val oldDataTemp = line.getJSONArray("old").getJSONObject(0)
+          tableKeyColumns = tableUtils.getKeyColumns(tableTemp)
+
           println(getSysDateStamp() + "old=============== " + oldDataTemp)
           update.updateDataDeal(conn, tableGetUpdateSql, tableTemp, newDataTemp, oldDataTemp, tableKeyColumns)
         }
@@ -141,10 +147,34 @@ object driverPostingMain {
 
   def dealParseObject(line: String): JSONObject = {
     //  println("原始接收到的数据："+line)
-
+var JSONObjectTemp:JSONObject= JSON.parseObject("{}")
     driverPostingMainLog.info(line)
-    JSON.parseObject(line)
+    if(isJsonObject(line)) {
+      JSONObjectTemp=  JSON.parseObject(line)
+    }else{
+      JSON.parseObject("{}")
+    }
+    JSONObjectTemp
+  }
 
+  import com.alibaba.fastjson.JSONObject
+
+  /**
+   * 判断字符串是否可以转化为json对象
+   *
+   * @param content
+   * @return
+   */
+  def isJsonObject(content: String): Boolean = { // 此处应该注意，不要使用StringUtils.isEmpty(),因为当content为"  "空格字符串时，JSONObject.parseObject可以解析成功，
+    // 实际上，这是没有什么意义的。所以content应该是非空白字符串且不为空，判断是否是JSON数组也是相同的情况。
+    if (StringUtils.isBlank(content)) return false
+    try {
+      val jsonStr = JSON.parseObject(content)
+      true
+    } catch {
+      case e: Exception =>
+        false
+    }
   }
 
 

@@ -22,7 +22,9 @@ object driver_vip_application {
     ,"OUT_REASON"
   )
   val KeyColumns=Array("ID")
-  var InsertSql = """
+
+  var InsertSql = """ INSERT INTO yzs_src.src_driver_vip_application """
+ /* var InsertSql = """
              INSERT INTO yzs_src.src_driver_vip_application  (
               ID
 ,CREATED_BY
@@ -44,7 +46,7 @@ object driver_vip_application {
 )
              VALUES(?,?,?,?,?,?,?,?,?,?,?)
             """
-
+*/
   //alter table  yzs_src.src_driver_vip_application update job_name='10' where id ='12' ;
   var UpdateSql ="alter table  yzs_src.src_driver_vip_application update  "
   val columnTypeMap = Map(

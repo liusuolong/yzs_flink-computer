@@ -7,17 +7,17 @@ object configUtil extends Serializable {
   var configFilePath = "application.properties"
 //  lazy val config = PropertiesUtil.getProperties(configFilePath)
 
-  var kafkaFilePath = "dev/kafka.properties"
-  var clickHousePath="dev/clickhouse.properties"
-  var checkPonintPath="dev/checkPoint.properties"
+  var kafkaFilePath = "online/kafka.properties"
+  var clickHousePath="online/clickhouse.properties"
+  var checkPonintPath="online/checkPoint.properties"
   var sysDeployment = System.getProperty("STREAMING_ENV")
  //  var sysDeployment = System.getProperty(System.getenv("STREAMING_ENV"))
 
   println("....ConfigUtil..............." + sysDeployment)
-  if (null != sysDeployment && "online".equals(sysDeployment)) {
-    kafkaFilePath = "online/kafka.properties"
-    checkPonintPath="online/checkPoint.properties"
-    clickHousePath="online/clickhouse.properties"
+  if (null != sysDeployment && "dev".equals(sysDeployment)) {
+    kafkaFilePath = "dev/kafka.properties"
+    checkPonintPath="dev/checkPoint.properties"
+    clickHousePath="dev/clickhouse.properties"
   }
   lazy val kafkaUtil = kafkaDealUtil.getKafkaUtilSingleton(kafkaFilePath)
  // lazy val clickHouse = clickHouseUtil.getClickHouseUtil(clickHousePath)

@@ -32,7 +32,9 @@ object driver_posting {
     ,"container_id"
   )
   val KeyColumns=Array("ID")
-  var InsertSql = """
+
+  var InsertSql = """  INSERT INTO yzs_src.src_driver_posting """
+  /*var InsertSql = """
              INSERT INTO yzs_src.src_driver_posting  (
 ID
 ,CREATED_BY
@@ -65,7 +67,7 @@ ID
              VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,
                     ?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """
-
+*/
   //alter table  yzs_src.src_driver_posting update job_name='10' where id ='12' ;
   var UpdateSql ="alter table zs_src.src_driver_posting update  "
   val columnTypeMap = Map(

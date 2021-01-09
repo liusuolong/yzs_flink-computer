@@ -6,26 +6,30 @@ import java.util.regex.Pattern
 
 object DateUtil {
 
+
   /**
     * 时间戳转换成日期格式字符串
     *
     * @param seconds 精确到秒的字符串
-    * @param formatStr yyyy-MM-dd HH:mm:ss
     * @return
     */
-  def timeStamp2Date(seconds: String, format: String): String = {
-    if(!isNumeric(seconds)||seconds==""){
-      return new SimpleDateFormat("yyyyMMdd").format(new Date())
-    }
-    var informat = format
-    if (seconds == null || seconds.isEmpty() || seconds.equals("null")) {
-      return ""
-    }
-    if (format == null || format.isEmpty()) {
-      informat = "yyyy-MM-dd HH:mm:ss"
-    }
-    var sdf = new SimpleDateFormat(informat);
-    return sdf.format(new Date((seconds + "000").toLong))
+    //2021-01-06 10:34:45  20210108
+  def toTimeStamp2Date(seconds: String, format: String): String = {
+  var inFormat:String=format
+      var dataValueTemp:String =null
+
+      if (format == null || format.isEmpty()) {
+        inFormat = "yyyy-MM-dd HH:mm:ss"
+      }
+     if (seconds == null || seconds.isEmpty() || seconds.equals("null")) {
+        dataValueTemp = new SimpleDateFormat(inFormat).format(new Date())
+     }else{
+
+       dataValueTemp= new SimpleDateFormat(inFormat).format(
+         new SimpleDateFormat(inFormat).parse(seconds))
+     }
+
+      dataValueTemp
   }
 
   /**
@@ -41,7 +45,7 @@ object DateUtil {
   /**
     * 日期格式字符串转换成时间戳
     *
-    * @param date   字符串日期
+    * @param date_str   字符串日期
     * @param format 如：yyyy-MM-dd HH:mm:ss
     * @return
     */

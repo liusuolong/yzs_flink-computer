@@ -146,7 +146,9 @@ object truck_order_container {
     ,"HAS_DISPATCHED"
   )
   val KeyColumns=Array("ID")
-  var InsertSql = """
+
+  var InsertSql = """ INSERT INTO yzs_src.src_truck_order_container """
+  /*var InsertSql = """
              INSERT INTO yzs_src.src_truck_order_container  (
              ID
 ,CREATED_BY
@@ -297,7 +299,7 @@ object truck_order_container {
 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """
-
+*/
   //alter table  yzs_src.src_truck_order_container update job_name='10' where id ='12' ;
   var UpdateSql ="alter table  yzs_src.src_truck_order_container update  "
   val columnTypeMap = Map(

@@ -63,7 +63,9 @@ object user {
     , "PREV_STATUS_ID"
   )
   val KeyColumns = Array("ID")
-  var InsertSql =
+
+  var InsertSql ="""   INSERT INTO yzs_src.src_user """
+ /* var InsertSql =
     """
              INSERT INTO yzs_src.src_user  (
              TYPE
@@ -130,7 +132,7 @@ object user {
 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """
-
+*/
   //alter table  yzs_src.src_user update job_name='10' where id ='12' ;
   var UpdateSql = "alter table  yzs_src.src_user update  "
 

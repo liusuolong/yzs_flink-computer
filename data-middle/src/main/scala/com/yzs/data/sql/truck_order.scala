@@ -70,7 +70,8 @@ object truck_order {
     , "FORWARDER_ORDER_ID"
   )
   val KeyColumns = Array("ID")
-  var InsertSql =
+  var InsertSql ="""  INSERT INTO yzs_src.src_truck_order """
+ /* var InsertSql =
     """
              INSERT INTO yzs_src.src_truck_order  (
              ID
@@ -144,7 +145,7 @@ object truck_order {
 ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
 ,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             """
-
+*/
   //alter table  yzs_src.src_truck_order update job_name='10' where id ='12' ;
   var UpdateSql = "alter table  yzs_src.src_truck_order update  "
   val columnTypeMap = Map(

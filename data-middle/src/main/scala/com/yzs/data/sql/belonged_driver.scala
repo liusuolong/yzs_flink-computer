@@ -65,7 +65,8 @@ object belonged_driver {
     ,"IS_CUSTOMS_RECORD"
   )
   val KeyColumns=Array("ID")
-  var InsertSql = """
+  var InsertSql = """ INSERT INTO yzs_src.src_belonged_driver """
+  /*var InsertSql = """
              INSERT INTO yzs_src.src_belonged_driver  (
              ID
 ,CREATED_BY
@@ -131,7 +132,7 @@ object belonged_driver {
              VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,
                 ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-            """
+            """*/
 
   //alter table  yzs_src.src_belonged_driver update job_name='10' where id ='12' ;
   var UpdateSql ="alter table  yzs_src.src_belonged_driver update  "
