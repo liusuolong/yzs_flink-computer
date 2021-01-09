@@ -8,6 +8,8 @@ import scala.collection.JavaConversions._
 import com.alibaba.fastjson.JSONObject
 import com.yzs.data.common.configUtil.ckPoolUtil
 import com.yzs.data.sql.tableUtils
+import com.yzs.data.utils.CommonUtil.{dealDefaultValue, transDefault}
+import com.yzs.data.utils.DateUtil.toTimeStamp2Date
 
 class clickHouseUpdate extends Serializable {
 
@@ -25,19 +27,21 @@ class clickHouseUpdate extends Serializable {
     var cloNameTemp: String = ""
     var i = 1
     var typeTemp: String = ""
+    var columnValueTemp: String = ""
     try {
       for (entry <- oldData.entrySet()) {
         cloNameTemp = entry.getKey
-
+        columnValueTemp = transDefault(entry.getValue)
         // prepareState.setString(i, sqlType.getString(cloNameTemp))
         typeTemp = tableUtils.getColumnsType(tableTemp, cloNameTemp)
-      //  dealColumnsUpdateType(oldData,typeTemp, prepareState, cloNameTemp, i)
-       dealColumnsUpdateType(newDataTemp,typeTemp, prepareState, cloNameTemp, i)
+        //  dealColumnsUpdateType(oldData,typeTemp, prepareState, cloNameTemp, i)
+        dealColumnsUpdateType(columnValueTemp, typeTemp, prepareState, cloNameTemp, i)
         i = i + 1
       }
       for (entry <- 0 to keyName.length - 1) {
         cloNameTemp == keyName(entry)
-          prepareState.setString(i, newDataTemp.getString(cloNameTemp))
+        cloNameTemp == keyName(entry)
+        prepareState.setString(i, newDataTemp.getString(cloNameTemp))
         i = i + 1
       }
       prepareState.executeUpdate
@@ -56,30 +60,44 @@ class clickHouseUpdate extends Serializable {
        * columnNameTemp:id
        * id:1
         */
-  def dealColumnsUpdateType(sqlType:JSONObject,typeTemp: String, prepareState: PreparedStatement, columnNameTemp: String, i: Int): Unit = {
+  def dealColumnsUpdateType(columnValueTemp: String, typeTemp: String, prepareState: PreparedStatement, columnNameTemp: String, i: Int): Unit = {
+    var dataTypeTemp: String = null
+    var dataTemp: Any = null
     typeTemp match {
       case "String" | "Some(String)" => {
-        prepareState.setString(i, sqlType.getString(columnNameTemp))
+        prepareState.setString(i, columnValueTemp)
       }
       case "Date" | "Some(Date)" => {
-        prepareState.setDate(i, sqlType.getSqlDate(columnNameTemp))
+        dataTypeTemp = "Date"
+        dataTemp = dealDefaultValue(toTimeStamp2Date(columnValueTemp, "yyyy-MM-dd"), dataTypeTemp)
+        prepareState.setString(i, dataTemp.toString)
       }
       case "DateTime" | "Some(DateTime)" => {
-        prepareState.setTimestamp(i, sqlType.getTimestamp(columnNameTemp))
+        // prepareState.setTimestamp(i, sqlType.getTimestamp(columnNameTemp))
+        dataTypeTemp = "DateTime"
+        dataTemp = dealDefaultValue(toTimeStamp2Date(columnValueTemp, "yyyy-MM-dd HH:mm:ss"), dataTypeTemp)
+        prepareState.setString(i, dataTemp.toString)
       }
       case "Int8" | "Int16" | "Int32" | "UInt8" | "UInt16" | "UInt32" |
            "Some(Int8)" | "Some(Int16)" | "Some(Int32)" | "Some(UInt8)" | "Some(UInt16)" | "Some(UInt32)" => {
-    //    val Ck = println(11111)
+        //    val Ck = println(11111)
 
-        prepareState.setInt(i, sqlType.getInteger(columnNameTemp))
+        //   prepareState.setInt(i, sqlType.getInteger(columnNameTemp))
+        dataTypeTemp = "Int"
+        dataTemp = dealDefaultValue(columnValueTemp, dataTypeTemp)
+        prepareState.setInt(i, dataTemp.toString.toInt)
       }
       case "Float" | "Float32" | "Float64" |
            "Some(Float)" | "Some(Float32)" | "Some(Float64)" => {
-    //    val Ck = println(11111)
-        prepareState.setFloat(i, sqlType.getFloat(columnNameTemp))
+        //    val Ck = println(11111)
+        //        prepareState.setFloat(i, sqlType.getFloat(columnNameTemp))
+        dataTypeTemp = "Float"
+        dataTemp = dealDefaultValue(columnValueTemp, dataTypeTemp)
+        prepareState.setDouble(i, dataTemp.toString.toInt)
       }
       case _ => {
-        prepareState.setString(i, sqlType.getString(columnNameTemp))
+        // prepareState.setString(i, sqlType.getString(columnNameTemp))
+        prepareState.setString(i, columnValueTemp)
       }
     }
   }

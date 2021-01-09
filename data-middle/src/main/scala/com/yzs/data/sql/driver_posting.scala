@@ -69,7 +69,7 @@ ID
             """
 */
   //alter table  yzs_src.src_driver_posting update job_name='10' where id ='12' ;
-  var UpdateSql ="alter table zs_src.src_driver_posting update  "
+  var UpdateSql ="alter table yzs_src.src_driver_posting update  "
   val columnTypeMap = Map(
     "ID"->"Int32",
     "CREATED_BY"->"String",

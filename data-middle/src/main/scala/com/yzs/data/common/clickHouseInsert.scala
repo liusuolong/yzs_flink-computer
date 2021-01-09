@@ -7,6 +7,7 @@ import java.util.Date
 import com.alibaba.fastjson.JSONObject
 import com.yzs.data.common.configUtil.ckPoolUtil
 import com.yzs.data.sql.tableUtils
+import com.yzs.data.utils.CommonUtil.{dealDefaultValue, transDefault}
 import com.yzs.data.utils.DateUtil.toTimeStamp2Date
 
 import scala.collection.JavaConversions._
@@ -23,11 +24,11 @@ class clickHouseInsert extends Serializable {
     var typeTemp: String = null
     val prepareState = conn.prepareStatement(sqlInsert)
     var columnNameTemp: String = ""
-      var columnValueTemp:String=""
+    var columnValueTemp: String = ""
     try {
       for (entry <- newDataTemp.entrySet()) {
         columnNameTemp = entry.getKey
-        columnValueTemp =transNull(entry.getValue)
+        columnValueTemp = transDefault(entry.getValue)
         typeTemp = tableUtils.getColumnsType(tableTemp, columnNameTemp)
         dealColumnsInsertType(columnValueTemp, typeTemp, prepareState, indexTemp)
         indexTemp = indexTemp + 1
@@ -59,89 +60,43 @@ class clickHouseInsert extends Serializable {
   }
 
 
-
-  def transNull(dataValue: Any): String = {
-      var dataValueTemp:String =""
-
-    if (dataValue == null || dataValue.equals("null")) {
-      dataValueTemp=""
-    }else{
-      dataValueTemp=dataValue.toString
-    }
-    dataValueTemp
-  }
-
   def dealColumnsInsertType(columnValueTemp: String, typeTemp: String, prepareState: PreparedStatement, i: Int): Unit = {
-    var dataTypeTemp:String=null
-    var dateTemp:Any=null
+    var dataTypeTemp: String = null
+    var dataTemp: Any = null
     typeTemp match {
       case "String" | "Some(String)" => {
         prepareState.setString(i, columnValueTemp)
       }
       case "Date" | "Some(Date)" => {
-        dataTypeTemp="Date"
-         dateTemp = dealDefaultValue(toTimeStamp2Date(columnValueTemp, "yyyy-MM-dd"),dataTypeTemp)
-        prepareState.setString(i, dateTemp.toString)
+        dataTypeTemp = "Date"
+        dataTemp = dealDefaultValue(toTimeStamp2Date(columnValueTemp, "yyyy-MM-dd"), dataTypeTemp)
+        prepareState.setString(i, dataTemp.toString)
       }
       case "DateTime" | "Some(DateTime)" => {
-        dataTypeTemp="DateTime"
-        dateTemp = dealDefaultValue(toTimeStamp2Date(columnValueTemp, "yyyy-MM-dd HH:mm:ss"),dataTypeTemp)
-        prepareState.setString(i, dateTemp.toString)
+        dataTypeTemp = "DateTime"
+        dataTemp = dealDefaultValue(toTimeStamp2Date(columnValueTemp, "yyyy-MM-dd HH:mm:ss"), dataTypeTemp)
+        prepareState.setString(i, dataTemp.toString)
       }
       case "Int8" | "Int16" | "Int32" | "UInt8" | "UInt16" | "UInt32" |
            "Some(Int8)" | "Some(Int16)" | "Some(Int32)" | "Some(UInt8)" | "Some(UInt16)" | "Some(UInt32)" => {
         //    val Ck = println(11111)
-        dataTypeTemp="Int"
-        dateTemp = dealDefaultValue(columnValueTemp,dataTypeTemp)
-        prepareState.setInt(i, dateTemp.toString.toInt)
+        dataTypeTemp = "Int"
+        dataTemp = dealDefaultValue(columnValueTemp, dataTypeTemp)
+        prepareState.setInt(i, dataTemp.toString.toInt)
       }
       case "Float" | "Float32" | "Float64" |
            "Some(Float)" | "Some(Float32)" | "Some(Float64)" => {
         //     val Ck = println(11111)
-        dataTypeTemp="Float"
-        dateTemp = dealDefaultValue(columnValueTemp,dataTypeTemp)
-        prepareState.setDouble(i, dateTemp.toString.toInt)
+        dataTypeTemp = "Float"
+        dataTemp = dealDefaultValue(columnValueTemp, dataTypeTemp)
+        prepareState.setDouble(i, dataTemp.toString.toInt)
       }
       case _ => {
-        prepareState.setString(i,columnValueTemp)
+        prepareState.setString(i, columnValueTemp)
       }
     }
   }
 
-
-  def dealDefaultValue(dataValue:String,typeTemp:String): Any ={
-    var dataValueTemp:Any=null
-    typeTemp match {
-    case "Date"=>{
-      if (dataValue == null || dataValue.isEmpty() || dataValue.equals("null")
-        ||dataValue.equals("")) {
-        dataValueTemp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())
-      }else{
-        dataValueTemp=dataValue
-      }
-    }
-    case "DateTime"=>{
-      if (dataValue == null || dataValue.isEmpty() || dataValue.equals("null")
-        ||dataValue.equals("")) {
-        dataValueTemp = new SimpleDateFormat("yyyy-MM-dd").format(new Date())
-      }else{
-        dataValueTemp=dataValue
-      }
-    }
-    case "Int"|"Float"=>{
-      if (dataValue == null || dataValue.isEmpty() || dataValue.equals("null")
-        ||dataValue.equals("")) {
-        dataValueTemp = 0
-      }else{
-        dataValueTemp=dataValue
-      }
-    }
-    case _=>{
-      dataValueTemp=dataValue
-    }
-    }
-    dataValueTemp
-  }
 
   /*
   *typeTemp:String
