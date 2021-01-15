@@ -89,7 +89,7 @@ class clickHouseInsert extends Serializable {
         //     val Ck = println(11111)
         dataTypeTemp = "Float"
         dataTemp = dealDefaultValue(columnValueTemp, dataTypeTemp)
-        prepareState.setDouble(i, dataTemp.toString.toInt)
+        prepareState.setDouble(i, dataTemp.toString.toFloat)
       }
       case _ => {
         prepareState.setString(i, columnValueTemp)
