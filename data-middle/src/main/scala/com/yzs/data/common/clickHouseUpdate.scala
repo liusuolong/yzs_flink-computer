@@ -39,9 +39,7 @@ class clickHouseUpdate extends Serializable {
         i = i + 1
       }
       for (entry <- 0 to keyName.length - 1) {
-        cloNameTemp == keyName(entry)
-        cloNameTemp == keyName(entry)
-        prepareState.setString(i, newDataTemp.getString(cloNameTemp))
+        prepareState.setString(i, newDataTemp.getString(keyName(entry)))
         i = i + 1
       }
       prepareState.executeUpdate
@@ -93,7 +91,7 @@ class clickHouseUpdate extends Serializable {
         //        prepareState.setFloat(i, sqlType.getFloat(columnNameTemp))
         dataTypeTemp = "Float"
         dataTemp = dealDefaultValue(columnValueTemp, dataTypeTemp)
-        prepareState.setDouble(i, dataTemp.toString.toInt)
+        prepareState.setDouble(i, dataTemp.toString.toFloat)
       }
       case _ => {
         // prepareState.setString(i, sqlType.getString(columnNameTemp))
