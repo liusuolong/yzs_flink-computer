@@ -4,14 +4,15 @@ package com.yzs.data.main
 import java.sql.Connection
 import java.text.SimpleDateFormat
 import java.util.Date
-
 import com.alibaba.fastjson.{JSON, JSONObject}
 import com.yzs.data.common.{clickHouseInsert, clickHouseUpdate}
 import org.apache.flink.streaming.api.CheckpointingMode
 import org.apache.flink.streaming.api.environment.CheckpointConfig
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import com.yzs.data.common.configUtil._
+import com.yzs.data.sql.tableList.columnTypeMap
 import com.yzs.data.sql.tableUtils
+import com.yzs.data.sql.tableUtils.getDatabase
 import com.yzs.data.utils.DateUtil.getSysDateStamp
 import com.yzs.data.utils.clickHousePoolUtil
 import org.apache.commons.lang3.StringUtils
@@ -82,41 +83,46 @@ object driverPostingMain {
 
 
   def dealDataConn(temp: String): Unit = {
-    var line: JSONObject = null
+    var AllJsonObject: JSONObject = null
     var execTemp: String = null
     var tableTemp: String = null
+    var databaseTemp: String = null
     var tableKeyColumns: Array[String] = null
-    var newDataTemp:JSONObject=null
+   // var newDataTemp:JSONObject=null
     // conn = ckPoolUtil.getConn
     val conn = ckPoolUtil.getConn()
     try {
       println(getSysDateStamp() + "ALL============" + temp)
-      line = dealParseObject(temp)
-      tableTemp = line.getString("table")
-      execTemp = line.getString("type")
+      AllJsonObject = dealParseObject(temp)
+
+      tableTemp ="src_"+AllJsonObject.getString("table")
+     // databaseTemp=getDatabase(tableTemp)
+      databaseTemp="yzs_src"
+      execTemp = AllJsonObject.getString("type")
       //  val newDataTemp = dealParseObject(line.getString("data"))
-       newDataTemp = line.getJSONArray("data").getJSONObject(0)
-      println(getSysDateStamp() + "NEW===================" + newDataTemp)
+   //    newDataTemp = line.getJSONArray("data").getJSONObject(0)
+      println(getSysDateStamp() + "NEW===================" + AllJsonObject)
 
       // driverPostingMainLog.info("执行INSERT before==============")
 
       execTemp match {
         case "INSERT" => {
-          val tableGetColumns = tableUtils.getColumns(tableTemp)
+
+          val tableGetColumns = tableUtils.getColumns(conn,databaseTemp,tableTemp)
           val tableInsertSql = tableUtils.getInsertSql(tableTemp)
           //driverPostingMainLog.info("执行INSERT==============")
-          insert.insertDataDeal(conn, tableInsertSql, tableTemp, tableGetColumns, newDataTemp)
+          insert.insertDataDeal(conn, tableInsertSql, tableTemp, tableGetColumns, AllJsonObject)
 
 
         }
         case "UPDATE" => {
           val tableGetUpdateSql = tableUtils.getUpdateSql(tableTemp)
           // driverPostingMainLog.info("执行Update==============")
-          val oldDataTemp = line.getJSONArray("old").getJSONObject(0)
-          tableKeyColumns = tableUtils.getKeyColumns(tableTemp)
+          val oldDataTemp = AllJsonObject.getJSONArray("old").getJSONObject(0)
+          tableKeyColumns = tableUtils.getKeyColumns(conn,databaseTemp,tableTemp)
 
           println(getSysDateStamp() + "old=============== " + oldDataTemp)
-          update.updateDataDeal(conn, tableGetUpdateSql, tableTemp, newDataTemp, oldDataTemp, tableKeyColumns)
+          update.updateDataDeal(conn, tableGetUpdateSql, tableTemp, AllJsonObject, oldDataTemp, tableKeyColumns)
         }
         case _ => ""
       }
@@ -135,13 +141,23 @@ object driverPostingMain {
     val table: String = line.getString("table")
     //"com.yzs.data.sql.job_status_trace_log"
     // com.yzs.data.sql.job_status_trace_log
-    if (tableUtils.tableListArray.contains("com.yzs.data.sql." + table)) {
-      //if (table.equals("driver_vip_application")) {
 
-      filterDataBoolean = true
-    } else {
-      filterDataBoolean = false
-    }
+//    if (tableUtils.tableListArray.contains("com.yzs.data.sql." + table)) {
+//      //if (table.equals("driver_vip_application")) {
+//
+//      filterDataBoolean = true
+//    } else {
+//      filterDataBoolean = false
+//    }
+
+    val nameList=columnTypeMap.map(_._1)
+        if (nameList.toArray.contains("src_"+table)) {
+          //if (table.equals("driver_vip_application")) {
+
+          filterDataBoolean = true
+        } else {
+          filterDataBoolean = false
+        }
     filterDataBoolean
   }
 

@@ -14,10 +14,13 @@ import com.yzs.data.utils.DateUtil.toTimeStamp2Date
 class clickHouseUpdate extends Serializable {
 
 
-  def updateDataDeal(conn: Connection, sql: String, tableTemp: String, newDataTemp: JSONObject,
+  def updateDataDeal(conn: Connection, sql: String, tableTemp: String, AllJsonObject:  JSONObject,
                      oldData: JSONObject, keyName: Array[String]): Unit = {
 
     //complete_time=?  AND is_success=?
+    val newDataTemp = AllJsonObject.getJSONArray("data").getJSONObject(0)
+    val  mysqlType = AllJsonObject.getJSONObject("mysqlType")
+
 
     val newColumnNameTemp = updateSqlSetSplit(oldData)
     val KeyNameTemp = updateSqlWhereSplit(keyName)
@@ -33,7 +36,8 @@ class clickHouseUpdate extends Serializable {
         cloNameTemp = entry.getKey
         columnValueTemp = transDefault(entry.getValue)
         // prepareState.setString(i, sqlType.getString(cloNameTemp))
-        typeTemp = tableUtils.getColumnsType(tableTemp, cloNameTemp)
+//        typeTemp = tableUtils.getColumnsType(tableTemp, cloNameTemp)
+        typeTemp = tableUtils.getColumnsType(conn,"yzs_src",tableTemp, cloNameTemp,mysqlType)
         //  dealColumnsUpdateType(oldData,typeTemp, prepareState, cloNameTemp, i)
         dealColumnsUpdateType(columnValueTemp, typeTemp, prepareState, cloNameTemp, i)
         i = i + 1

@@ -1,9 +1,8 @@
 package com.yzs.data.utils
 
-import java.sql.{Connection, ResultSet, SQLException, Statement}
+import java.sql.{Connection, PreparedStatement, ResultSet, SQLException, Statement}
 import java.util
 import java.util.Properties
-
 import javax.sql.DataSource
 import org.apache.log4j.Logger
 
@@ -79,6 +78,11 @@ class clickHousePoolUtil(filePath:String) {
   def closeConnection(con:Connection){
     pools.push(con)
   }
+
+  def closeStatement(statement:PreparedStatement){
+    statement.close()
+  }
+
 
 }
 object clickHousePoolUtil  {

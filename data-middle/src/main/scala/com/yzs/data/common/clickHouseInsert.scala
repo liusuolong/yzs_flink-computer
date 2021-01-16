@@ -16,8 +16,11 @@ class clickHouseInsert extends Serializable {
 
 
   def insertDataDeal(conn: Connection, sql: String, tableTemp: String,
-                     tableGetColumns: Array[String], newDataTemp: JSONObject): Unit = {
+                     tableGetColumns: Array[String], AllJsonObject: JSONObject): Unit = {
     //(STATUS , CREATION_TIME ) values(?,?)
+   val  newDataTemp = AllJsonObject.getJSONArray("data").getJSONObject(0)
+    val  mysqlType = AllJsonObject.getJSONObject("mysqlType")
+
     val sqlInsert = sql + insertSqlValuesSplit(newDataTemp)
     println("sqlInsert=================" + sqlInsert)
     var indexTemp = 1
@@ -29,7 +32,9 @@ class clickHouseInsert extends Serializable {
       for (entry <- newDataTemp.entrySet()) {
         columnNameTemp = entry.getKey
         columnValueTemp = transDefault(entry.getValue)
-        typeTemp = tableUtils.getColumnsType(tableTemp, columnNameTemp)
+     //   typeTemp = tableUtils.getColumnsType(tableTemp, columnNameTemp)
+        typeTemp = tableUtils.getColumnsType(conn,"yzs_src",tableTemp, columnNameTemp,mysqlType)
+
         dealColumnsInsertType(columnValueTemp, typeTemp, prepareState, indexTemp)
         indexTemp = indexTemp + 1
       }
