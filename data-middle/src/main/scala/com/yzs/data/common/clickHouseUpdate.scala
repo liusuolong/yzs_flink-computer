@@ -1,13 +1,13 @@
 package com.yzs.data.common
 
 import java.sql.{Connection, PreparedStatement}
-
 import com.alibaba.fastjson.{JSON, JSONObject}
 
 import scala.collection.JavaConversions._
 import com.alibaba.fastjson.JSONObject
 import com.yzs.data.common.configUtil.ckPoolUtil
 import com.yzs.data.sql.tableUtils
+import com.yzs.data.sql.tableUtils.getDatabase
 import com.yzs.data.utils.CommonUtil.{dealDefaultValue, transDefault}
 import com.yzs.data.utils.DateUtil.toTimeStamp2Date
 
@@ -20,7 +20,7 @@ class clickHouseUpdate extends Serializable {
     //complete_time=?  AND is_success=?
     val newDataTemp = AllJsonObject.getJSONArray("data").getJSONObject(0)
     val  mysqlType = AllJsonObject.getJSONObject("mysqlType")
-
+    val databaseTemp=getDatabase(tableTemp)
 
     val newColumnNameTemp = updateSqlSetSplit(oldData)
     val KeyNameTemp = updateSqlWhereSplit(keyName)
@@ -37,7 +37,7 @@ class clickHouseUpdate extends Serializable {
         columnValueTemp = transDefault(entry.getValue)
         // prepareState.setString(i, sqlType.getString(cloNameTemp))
 //        typeTemp = tableUtils.getColumnsType(tableTemp, cloNameTemp)
-        typeTemp = tableUtils.getColumnsType(conn,"yzs_src",tableTemp, cloNameTemp,mysqlType)
+        typeTemp = tableUtils.getColumnsType(conn,databaseTemp,tableTemp, cloNameTemp,mysqlType)
         //  dealColumnsUpdateType(oldData,typeTemp, prepareState, cloNameTemp, i)
         dealColumnsUpdateType(columnValueTemp, typeTemp, prepareState, cloNameTemp, i)
         i = i + 1

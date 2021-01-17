@@ -3,10 +3,10 @@ package com.yzs.data.common
 import java.sql.{Connection, PreparedStatement}
 import java.text.SimpleDateFormat
 import java.util.Date
-
 import com.alibaba.fastjson.JSONObject
 import com.yzs.data.common.configUtil.ckPoolUtil
 import com.yzs.data.sql.tableUtils
+import com.yzs.data.sql.tableUtils.getDatabase
 import com.yzs.data.utils.CommonUtil.{dealDefaultValue, transDefault}
 import com.yzs.data.utils.DateUtil.toTimeStamp2Date
 
@@ -20,7 +20,7 @@ class clickHouseInsert extends Serializable {
     //(STATUS , CREATION_TIME ) values(?,?)
    val  newDataTemp = AllJsonObject.getJSONArray("data").getJSONObject(0)
     val  mysqlType = AllJsonObject.getJSONObject("mysqlType")
-
+   val databaseTemp=getDatabase(tableTemp)
     val sqlInsert = sql + insertSqlValuesSplit(newDataTemp)
     println("sqlInsert=================" + sqlInsert)
     var indexTemp = 1
@@ -33,7 +33,7 @@ class clickHouseInsert extends Serializable {
         columnNameTemp = entry.getKey
         columnValueTemp = transDefault(entry.getValue)
      //   typeTemp = tableUtils.getColumnsType(tableTemp, columnNameTemp)
-        typeTemp = tableUtils.getColumnsType(conn,"yzs_src",tableTemp, columnNameTemp,mysqlType)
+        typeTemp = tableUtils.getColumnsType(conn,databaseTemp,tableTemp, columnNameTemp,mysqlType)
 
         dealColumnsInsertType(columnValueTemp, typeTemp, prepareState, indexTemp)
         indexTemp = indexTemp + 1

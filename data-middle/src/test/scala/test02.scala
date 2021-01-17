@@ -2,6 +2,7 @@ package scala
 
 import com.alibaba.fastjson.JSON
 import com.yzs.data.common.configUtil.ckPoolUtil
+import com.yzs.data.sql.tableList.{ columnTypeObject}
 import com.yzs.data.sql.tableUtils
 import com.yzs.data.sql.tableUtils.getColumns
 
@@ -25,9 +26,12 @@ object test02 {
 //
 //    tableUtils.getColumnsType(conn,"yzs_src",tableTemp, columnNameTemp,mysqlType)
     import com.alibaba.fastjson.JSONObject
-    val str = "{'id':'int(10)','name':'varchar(10)','age':'int(10)','a2':'datetime'}"
-    val jsonObject = JSON.parseObject(str)
-
-    tableUtils.getColumnsType(conn,"yzs_src","test_210116", "a2",jsonObject)
+//    val str = "{'id':'int(10)','name':'varchar(10)','age':'int(10)','a2':'datetime'}"
+//    val jsonObject = JSON.parseObject(str)
+//
+//    tableUtils.getColumnsType(conn,"yzs_src","test_210116", "a2",jsonObject)
+//
+  println(columnTypeObject.getString("src_belonged_driver"))
+  println(   columnTypeObject.containsKey("src_belonged_driver"))
   }
 }

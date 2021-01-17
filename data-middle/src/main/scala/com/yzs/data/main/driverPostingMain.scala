@@ -10,7 +10,7 @@ import org.apache.flink.streaming.api.CheckpointingMode
 import org.apache.flink.streaming.api.environment.CheckpointConfig
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import com.yzs.data.common.configUtil._
-import com.yzs.data.sql.tableList.columnTypeMap
+import com.yzs.data.sql.tableList.{ columnTypeObject}
 import com.yzs.data.sql.tableUtils
 import com.yzs.data.sql.tableUtils.getDatabase
 import com.yzs.data.utils.DateUtil.getSysDateStamp
@@ -96,8 +96,8 @@ object driverPostingMain {
       AllJsonObject = dealParseObject(temp)
 
       tableTemp ="src_"+AllJsonObject.getString("table")
-     // databaseTemp=getDatabase(tableTemp)
-      databaseTemp="yzs_src"
+      databaseTemp=getDatabase(tableTemp)
+     // databaseTemp="yzs_src"
       execTemp = AllJsonObject.getString("type")
       //  val newDataTemp = dealParseObject(line.getString("data"))
    //    newDataTemp = line.getJSONArray("data").getJSONObject(0)
@@ -149,11 +149,14 @@ object driverPostingMain {
 //    } else {
 //      filterDataBoolean = false
 //    }
-
+/*
     val nameList=columnTypeMap.map(_._1)
-        if (nameList.toArray.contains("src_"+table)) {
+        if (nameList.toArray.contains("src_"+table)) {*/
           //if (table.equals("driver_vip_application")) {
 
+
+  //        val nameList=columnTypeMap.map(_._1)
+          if (columnTypeObject.containsKey("src_"+table)) {
           filterDataBoolean = true
         } else {
           filterDataBoolean = false

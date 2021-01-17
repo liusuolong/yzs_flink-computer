@@ -3,6 +3,7 @@ package com.yzs.data.sql
 import com.yzs.data.sql.systemTable.{ColumnArray, ColumnType, KeyColumnArray}
 import kafka.utils.json.JsonObject
 import com.alibaba.fastjson.JSONObject
+import com.yzs.data.sql.tableList.columnTypeObject
 
 import java.sql.{Connection, PreparedStatement, ResultSet}
 import scala.collection.mutable.ArrayBuffer
@@ -26,7 +27,7 @@ object tableUtils extends Serializable {
        case _ => ""
      }*/
     var databaseTemp = ""
-    databaseTemp = tableList.columnTypeMap.get(tableName).toString
+    databaseTemp =columnTypeObject.getString(tableName)
     databaseTemp
   }
 
