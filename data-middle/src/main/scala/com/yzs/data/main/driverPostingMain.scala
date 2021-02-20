@@ -4,13 +4,14 @@ package com.yzs.data.main
 import java.sql.Connection
 import java.text.SimpleDateFormat
 import java.util.Date
+
 import com.alibaba.fastjson.{JSON, JSONObject}
 import com.yzs.data.common.{clickHouseInsert, clickHouseUpdate}
 import org.apache.flink.streaming.api.CheckpointingMode
 import org.apache.flink.streaming.api.environment.CheckpointConfig
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import com.yzs.data.common.configUtil._
-import com.yzs.data.sql.tableList.{ columnTypeObject}
+import com.yzs.data.sql.tableList.columnTypeObject
 import com.yzs.data.sql.tableUtils
 import com.yzs.data.sql.tableUtils.getDatabase
 import com.yzs.data.utils.DateUtil.getSysDateStamp
@@ -42,12 +43,13 @@ object driverPostingMain {
 
 
     // Flink从topic中指定的group上次消费的位置开始消费，所以必须配置group.id参数
-    myConsumer.setStartFromGroupOffsets();
+    myConsumer.setStartFromGroupOffsets()
 
     val source = env.addSource(myConsumer)
 
     source.filter(line => {
-      dealTableFilter(dealParseObject(line))
+      dealTableFilter(
+        dealParseObject(line))
 
     }).map(
       temp => {
@@ -88,19 +90,21 @@ object driverPostingMain {
     var tableTemp: String = null
     var databaseTemp: String = null
     var tableKeyColumns: Array[String] = null
-   // var newDataTemp:JSONObject=null
+    // var newDataTemp:JSONObject=null
     // conn = ckPoolUtil.getConn
     val conn = ckPoolUtil.getConn()
     try {
       println(getSysDateStamp() + "ALL============" + temp)
       AllJsonObject = dealParseObject(temp)
-
-      tableTemp ="src_"+AllJsonObject.getString("table")
-      databaseTemp=getDatabase(tableTemp)
-     // databaseTemp="yzs_src"
+      //表名
+      tableTemp = "src_" + AllJsonObject.getString("table")
+      //获取数据库
+      databaseTemp = getDatabase(tableTemp)
+      // databaseTemp="yzs_src"
+      // update insert delete ...
       execTemp = AllJsonObject.getString("type")
       //  val newDataTemp = dealParseObject(line.getString("data"))
-   //    newDataTemp = line.getJSONArray("data").getJSONObject(0)
+      //    newDataTemp = line.getJSONArray("data").getJSONObject(0)
       println(getSysDateStamp() + "NEW===================" + AllJsonObject)
 
       // driverPostingMainLog.info("执行INSERT before==============")
@@ -108,7 +112,7 @@ object driverPostingMain {
       execTemp match {
         case "INSERT" => {
 
-          val tableGetColumns = tableUtils.getColumns(conn,databaseTemp,tableTemp)
+          val tableGetColumns = tableUtils.getColumns(conn, databaseTemp, tableTemp)
           val tableInsertSql = tableUtils.getInsertSql(tableTemp)
           //driverPostingMainLog.info("执行INSERT==============")
           insert.insertDataDeal(conn, tableInsertSql, tableTemp, tableGetColumns, AllJsonObject)
@@ -119,10 +123,25 @@ object driverPostingMain {
           val tableGetUpdateSql = tableUtils.getUpdateSql(tableTemp)
           // driverPostingMainLog.info("执行Update==============")
           val oldDataTemp = AllJsonObject.getJSONArray("old").getJSONObject(0)
-          tableKeyColumns = tableUtils.getKeyColumns(conn,databaseTemp,tableTemp)
+          tableKeyColumns = tableUtils.getKeyColumns(conn, databaseTemp, tableTemp)
 
           println(getSysDateStamp() + "old=============== " + oldDataTemp)
           update.updateDataDeal(conn, tableGetUpdateSql, tableTemp, AllJsonObject, oldDataTemp, tableKeyColumns)
+        }
+        //如果是删除表,将删除的状态 0 => 1
+        case "DELETE" => {
+          val deleteTableColumnsTemp = tableUtils.getColumns(conn, databaseTemp, tableTemp)
+          tableKeyColumns = tableUtils.getKeyColumns(conn, databaseTemp, tableTemp)
+          if ("ck_is_status".equals(deleteTableColumnsTemp)) {
+            //"ck_is_status" = 1
+            """
+              |alter table ?
+              |update deleteTableColumnsTemp = ?
+              |where ID = ?
+              |""".stripMargin
+            (tableTemp,1,tableKeyColumns)
+          }
+          //tableUtils.deleteColumn(conn,databaseTemp,tableTemp,"ck_is_status",)
         }
         case _ => ""
       }
@@ -135,6 +154,9 @@ object driverPostingMain {
     }
   }
 
+  /**
+   * 判断表是否存在
+   */
   def dealTableFilter(line: JSONObject): Boolean = {
 
     var filterDataBoolean = true
@@ -142,35 +164,35 @@ object driverPostingMain {
     //"com.yzs.data.sql.job_status_trace_log"
     // com.yzs.data.sql.job_status_trace_log
 
-//    if (tableUtils.tableListArray.contains("com.yzs.data.sql." + table)) {
-//      //if (table.equals("driver_vip_application")) {
-//
-//      filterDataBoolean = true
-//    } else {
-//      filterDataBoolean = false
-//    }
-/*
-    val nameList=columnTypeMap.map(_._1)
-        if (nameList.toArray.contains("src_"+table)) {*/
-          //if (table.equals("driver_vip_application")) {
+    //    if (tableUtils.tableListArray.contains("com.yzs.data.sql." + table)) {
+    //      //if (table.equals("driver_vip_application")) {
+    //
+    //      filterDataBoolean = true
+    //    } else {
+    //      filterDataBoolean = false
+    //    }
+    /*
+        val nameList=columnTypeMap.map(_._1)
+            if (nameList.toArray.contains("src_"+table)) {*/
+    //if (table.equals("driver_vip_application")) {
 
 
-  //        val nameList=columnTypeMap.map(_._1)
-          if (columnTypeObject.containsKey("src_"+table)) {
-          filterDataBoolean = true
-        } else {
-          filterDataBoolean = false
-        }
+    //        val nameList=columnTypeMap.map(_._1)
+    if (columnTypeObject.containsKey("src_" + table)) {
+      filterDataBoolean = true
+    } else {
+      filterDataBoolean = false
+    }
     filterDataBoolean
   }
 
   def dealParseObject(line: String): JSONObject = {
     //  println("原始接收到的数据："+line)
-var JSONObjectTemp:JSONObject= JSON.parseObject("{}")
+    var JSONObjectTemp: JSONObject = JSON.parseObject("{}")
     driverPostingMainLog.info(line)
-    if(isJsonObject(line)) {
-      JSONObjectTemp=  JSON.parseObject(line)
-    }else{
+    if (isJsonObject(line)) {
+      JSONObjectTemp = JSON.parseObject(line)
+    } else {
       JSON.parseObject("{}")
     }
     JSONObjectTemp

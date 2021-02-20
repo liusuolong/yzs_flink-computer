@@ -5,6 +5,9 @@ import com.alibaba.fastjson.{JSON, JSONObject}
 import scala.util.parsing.json
 import scala.util.parsing.json.JSONObject
 
+/**
+ * 获取表所对应的的数据库
+ */
 object tableList {
   val TableObject = "{'src_driver_posting':'yzs_src'," +
              "'src_truck_order_container':'yzs_src'," +

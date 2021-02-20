@@ -12,6 +12,12 @@ import scala.collection.mutable.ArrayBuffer
 object tableUtils extends Serializable {
 
 
+  /**
+   * 获取数据库名
+   *
+   * @param tableName
+   * @return
+   */
   def getDatabase(tableName: String): String = {
     //val temp = getTableClass(tableName)
     /* temp match {
@@ -27,12 +33,22 @@ object tableUtils extends Serializable {
        case _ => ""
      }*/
     var databaseTemp = ""
-    databaseTemp =columnTypeObject.getString(tableName)
+    databaseTemp = columnTypeObject.getString(tableName)
     databaseTemp
   }
 
 
-  def getColumnsType(conn: Connection, database: String, tableName: String, columnName: String, mysqlType: JSONObject): String = {
+  /**
+   * 判断表字段是否存在
+   *
+   * @param conn
+   * @param database
+   * @param tableName
+   * @param columnName
+   * @param mysqlType
+   * @return
+   */
+  def isExistColumns(conn: Connection, database: String, tableName: String, columnName: String, mysqlType: JSONObject): String = {
     var ClickHouseColumnType: String = "";
     val CKTypeStatement = conn.prepareStatement(ColumnType);
     try {
@@ -54,18 +70,53 @@ object tableUtils extends Serializable {
     }
   }
 
-  def getAddColumn(conn: Connection, database: String, tableName: String, columnName: String,ClickHouseColumnType:String): Unit ={
+  /**
+   * 增加字段
+   *
+   * @param conn                 连接
+   * @param database             库名
+   * @param tableName            表名
+   * @param columnName           列名
+   * @param ClickHouseColumnType 列类型
+   */
+  def getAddColumn(conn: Connection, database: String, tableName: String, columnName: String, ClickHouseColumnType: String): Unit = {
 
-    val AddSql="alter table "+database+"."+tableName+ " add column "+ columnName+" "+ClickHouseColumnType+";"
+    val AddSql = "alter table " + database + "." + tableName + " add column " + columnName + " " + ClickHouseColumnType + ";"
     val AddState = conn.prepareStatement(AddSql)
-   try {
-    AddState.executeUpdate()
-   }finally {
-     AddState.close()
-   }
+    try {
+      AddState.executeUpdate()
+    } finally {
+      AddState.close()
+    }
   }
 
-  def getTypeChange(mysqlType:JSONObject,columnName:String): String ={
+ /* /**
+   * 删除字段问题 直接将字段的值 0 => 1
+   *
+   * @param conn
+   * @param database
+   * @param tableName
+   * @param ck_is_status
+   * @param ID
+   */
+  def deleteColumn(conn: Connection, database: String, tableName: String, ck_is_status: Int, ID: Int): Unit = {
+    val deleteSql = "alter table " + database + "." + tableName + " update " + ck_is_status  + "where" + ID + ";"
+    val deleteState = conn.prepareStatement(deleteSql)
+    try {
+      deleteState.executeUpdate()
+    } finally {
+      deleteState.close()
+    }
+  }*/
+
+  /**
+   * mysql与ck数据类型问题
+   *
+   * @param mysqlType
+   * @param columnName
+   * @return
+   */
+  def getTypeChange(mysqlType: JSONObject, columnName: String): String = {
     val mysqlColumnType = mysqlType.getString(columnName)
     var ClickHouseColumnType: String = "";
 
@@ -85,8 +136,8 @@ object tableUtils extends Serializable {
   }
 
   def getColumns(conn: Connection, database: String, tableName: String): Array[String] = {
-    var columnsTemp: ArrayBuffer[String] = ArrayBuffer();
-    val statement = conn.prepareStatement(ColumnArray);
+    var columnsTemp: ArrayBuffer[String] = ArrayBuffer()
+    val statement = conn.prepareStatement(ColumnArray)
     try {
       statement.setString(1, database)
       statement.setString(2, tableName)

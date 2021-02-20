@@ -18,9 +18,10 @@ class clickHouseInsert extends Serializable {
   def insertDataDeal(conn: Connection, sql: String, tableTemp: String,
                      tableGetColumns: Array[String], AllJsonObject: JSONObject): Unit = {
     //(STATUS , CREATION_TIME ) values(?,?)
-   val  newDataTemp = AllJsonObject.getJSONArray("data").getJSONObject(0)
-    val  mysqlType = AllJsonObject.getJSONObject("mysqlType")
-   val databaseTemp=getDatabase(tableTemp)
+    val newDataTemp = AllJsonObject.getJSONArray("data").getJSONObject(0)
+    val mysqlType = AllJsonObject.getJSONObject("mysqlType")
+    //获取数据库
+    val databaseTemp = getDatabase(tableTemp)
     val sqlInsert = sql + insertSqlValuesSplit(newDataTemp)
     println("sqlInsert=================" + sqlInsert)
     var indexTemp = 1
@@ -32,8 +33,11 @@ class clickHouseInsert extends Serializable {
       for (entry <- newDataTemp.entrySet()) {
         columnNameTemp = entry.getKey
         columnValueTemp = transDefault(entry.getValue)
-     //   typeTemp = tableUtils.getColumnsType(tableTemp, columnNameTemp)
-        typeTemp = tableUtils.getColumnsType(conn,databaseTemp,tableTemp, columnNameTemp,mysqlType)
+        //   typeTemp = tableUtils.getColumnsType(tableTemp, columnNameTemp)
+        /**
+         * 判断是否存在该字段,如果不存在,则增加字段
+         */
+        typeTemp = tableUtils.isExistColumns(conn, databaseTemp, tableTemp, columnNameTemp, mysqlType)
 
         dealColumnsInsertType(columnValueTemp, typeTemp, prepareState, indexTemp)
         indexTemp = indexTemp + 1

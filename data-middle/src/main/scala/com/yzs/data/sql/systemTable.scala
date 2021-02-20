@@ -1,6 +1,9 @@
 package com.yzs.data.sql
 
 object systemTable {
+  /**
+   * 数据库下对应表的列的类型
+   */
   val ColumnType =
     """
       select  type  from system.columns
@@ -9,6 +12,9 @@ object systemTable {
       and  name=?
       ;
       """
+  /**
+   * 获取数据库对应的表下的列
+   */
   val ColumnArray =
     """
       select  name  from system.columns
@@ -16,6 +22,9 @@ object systemTable {
       and  table =?
       ;
       """
+  /**
+   * 获取数据库下表对应的主键
+   */
   val KeyColumnArray =
     """
       select  name  from system.columns

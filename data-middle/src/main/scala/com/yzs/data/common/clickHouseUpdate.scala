@@ -37,7 +37,10 @@ class clickHouseUpdate extends Serializable {
         columnValueTemp = transDefault(entry.getValue)
         // prepareState.setString(i, sqlType.getString(cloNameTemp))
 //        typeTemp = tableUtils.getColumnsType(tableTemp, cloNameTemp)
-        typeTemp = tableUtils.getColumnsType(conn,databaseTemp,tableTemp, cloNameTemp,mysqlType)
+        /**
+         * 判断是否存在该字段,如果不存在,则增加字段
+         */
+        typeTemp = tableUtils.isExistColumns(conn,databaseTemp,tableTemp, cloNameTemp,mysqlType)
         //  dealColumnsUpdateType(oldData,typeTemp, prepareState, cloNameTemp, i)
         dealColumnsUpdateType(columnValueTemp, typeTemp, prepareState, cloNameTemp, i)
         i = i + 1
